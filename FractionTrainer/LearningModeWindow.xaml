@@ -1,0 +1,63 @@
+﻿<Window x:Class="FractionTrainer.LearningModeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FractionTrainer"
+        mc:Ignorable="d"
+        Title="Режим обучения"
+        Height="720" Width="400"
+        WindowStartupLocation="CenterScreen"
+        Background="#FFEAEAEA" 
+        WindowStyle="None" BorderThickness="1" BorderBrush="#FFCCCCCC">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="Соберите дробь:" 
+                   Style="{StaticResource ModernTitleText}" 
+                   Margin="0,30,0,15" Grid.Row="0"/>
+
+        <TextBlock x:Name="TargetFractionTextBlock" Text="1/3" 
+                   Style="{StaticResource FractionDisplayText}" 
+                   Grid.Row="1"/>
+
+        <Border Grid.Row="2" Margin="30" Background="White" CornerRadius="10" BorderBrush="#FFDDDDDD" BorderThickness="1">
+            <local:FractionCircleControl x:Name="FractionDisplay" Margin="10"/>
+        </Border>
+
+        <Button x:Name="CheckButton" Content="Проверить" 
+                Grid.Row="3" Width="200" Height="50" 
+                Style="{StaticResource ModernButton}" 
+                Click="CheckButton_Click"/>
+
+        <Button x:Name="BackButton" Content="Назад" 
+                Grid.Row="4" Width="180" Height="45" 
+                Style="{StaticResource ModernButton}" 
+                Background="#FF6c757d"
+                Margin="10,10,10,20" 
+                Click="BackButton_Click">
+            <Button.Template>
+                <ControlTemplate TargetType="Button">
+                    <Border Background="{TemplateBinding Background}" CornerRadius="5">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="#FF5a6268"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter Property="Background" Value="#FF494e52"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Button.Template>
+        </Button>
+    </Grid>
+</Window>
