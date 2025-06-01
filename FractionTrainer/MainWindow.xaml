@@ -54,18 +54,14 @@
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0" 
-                   FontSize="32" 
-                   FontWeight="Bold"
-                   Foreground="#FF007AFF" 
-                   HorizontalAlignment="Center"
-                   TextWrapping="Wrap" TextAlignment="Center"
-                   Margin="0,35,0,25"> Тренажёр<LineBreak/>Собери дробь
+                   FontSize="32" FontWeight="Bold" Foreground="#FF007AFF" 
+                   HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center"
+                   Margin="0,35,0,25">
+            Тренажёр<LineBreak/>Собери дробь
         </TextBlock>
 
         <StackPanel Grid.Row="1" 
-                    HorizontalAlignment="Center" 
-                    VerticalAlignment="Center" 
-                    Orientation="Vertical">
+                    HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical">
 
             <TextBlock Text="Выберите режим:" Style="{StaticResource ModernTitleText}"/>
 
@@ -73,6 +69,11 @@
                     Width="220" Height="50" 
                     Style="{StaticResource ModernButton}" 
                     Click="LearningModeButton_Click"/>
+
+            <Button x:Name="MultipleChoiceModeButton" Content="Выберите варианты" 
+                    Width="220" Height="50" 
+                    Style="{StaticResource ModernButton}" 
+                    Click="MultipleChoiceModeButton_Click"/>
 
             <Button x:Name="TestModeButton" Content="Проверка знаний" 
                     Width="220" Height="50" 

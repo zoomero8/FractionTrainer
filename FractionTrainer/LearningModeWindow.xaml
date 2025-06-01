@@ -40,12 +40,12 @@
         <StackPanel Grid.Row="1" 
                     HorizontalAlignment="Center" 
                     VerticalAlignment="Center" 
-                    Margin="0,0,0,10">
+                    Margin="0,0,0,1">
 
             <TextBlock x:Name="NumeratorTextBlock" Text="3" Style="{StaticResource FractionDisplayText}"
                        Padding="0" LineHeight="58" HorizontalAlignment="Center" Margin="0,0,0,-8"/>
 
-            <Rectangle Height="4" Width="80" Fill="{Binding Foreground, ElementName=NumeratorTextBlock}" 
+            <Rectangle Height="4" Width="60" Fill="{Binding Foreground, ElementName=NumeratorTextBlock}" 
                        Margin="0" HorizontalAlignment="Center"/>
 
             <TextBlock x:Name="DenominatorTextBlock" Text="8" Style="{StaticResource FractionDisplayText}"

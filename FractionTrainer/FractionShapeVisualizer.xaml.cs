@@ -25,6 +25,17 @@ namespace FractionTrainer
 
         private List<int> selectedSectorIndexes = new List<int>();
 
+        // НОВОЕ СВОЙСТВО ЗАВИСИМОСТИ для включения/отключения интерактивности
+        public static readonly DependencyProperty IsInteractionEnabledProperty =
+            DependencyProperty.Register("IsInteractionEnabled", typeof(bool), typeof(FractionShapeVisualizer),
+            new PropertyMetadata(true)); // По умолчанию интерактивность включена
+
+        public bool IsInteractionEnabled
+        {
+            get { return (bool)GetValue(IsInteractionEnabledProperty); }
+            set { SetValue(IsInteractionEnabledProperty, value); }
+        }
+
         // ShapeType Property
         public static readonly DependencyProperty CurrentShapeTypeProperty =
             DependencyProperty.Register("CurrentShapeType", typeof(ShapeType), typeof(FractionShapeVisualizer),
@@ -52,13 +63,13 @@ namespace FractionTrainer
             DependencyProperty.Register("TargetNumerator", typeof(int), typeof(FractionShapeVisualizer),
             new PropertyMetadata(0, OnVisualPropertiesChanged));
 
-        public int TargetNumerator // Используется для информации, не для прямого рисования выбора
+        public int TargetNumerator
         {
             get { return (int)GetValue(TargetNumeratorProperty); }
             set { SetValue(TargetNumeratorProperty, value); }
         }
 
-        public int UserSelectedSectorsCount
+        public int UserSelectedSectorsCount // Используется для режима, где пользователь КЛИКАЕТ по секторам
         {
             get
             {
@@ -69,7 +80,7 @@ namespace FractionTrainer
 
         public FractionShapeVisualizer()
         {
-            InitializeComponent(); // Убедитесь, что эта строка не вызывает ошибок
+            InitializeComponent();
         }
 
         private static void OnVisualPropertiesChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -77,12 +88,14 @@ namespace FractionTrainer
             FractionShapeVisualizer control = d as FractionShapeVisualizer;
             if (control != null)
             {
-                // Сброс выбора, если меняется знаменатель или тип фигуры, так как старый выбор некорректен
-                if (e.Property == DenominatorProperty || e.Property == CurrentShapeTypeProperty)
+                // Сброс пользовательского выбора, если меняется знаменатель, тип фигуры или целевой числитель (для предустановленной закраски)
+                if (e.Property == DenominatorProperty ||
+                    e.Property == CurrentShapeTypeProperty ||
+                    e.Property == TargetNumeratorProperty) // Добавлена проверка на TargetNumerator
                 {
-                    control.selectedSectorIndexes.Clear();
+                    control.selectedSectorIndexes.Clear(); // Очищаем клики пользователя
                 }
-                control.DrawShape();
+                control.DrawShape(); // Перерисовываем фигуру
             }
         }
 
@@ -93,8 +106,8 @@ namespace FractionTrainer
 
         public void ResetUserSelectionAndDraw()
         {
-            selectedSectorIndexes.Clear();
-            DrawShape();
+            selectedSectorIndexes.Clear(); // Сбрасываем клики пользователя
+            DrawShape(); // Перерисовываем (фигура будет закрашена согласно TargetNumerator)
         }
 
         private void DrawShape()
@@ -106,57 +119,45 @@ namespace FractionTrainer
             bool canDraw = true;
             switch (CurrentShapeType)
             {
-                case ShapeType.Circle:
-                    if (Denominator <= 0) canDraw = false;
-                    break;
-                case ShapeType.Triangle:
-                    if (Denominator != 3)
-                    {
-                        System.Diagnostics.Debug.WriteLine($"[DrawShape] Triangle expects 3 sectors. Current Denominator: {Denominator}. Will not draw.");
-                        canDraw = false;
-                    }
-                    break;
-                case ShapeType.Octagon:
-                    if (Denominator != 8)
-                    {
-                        System.Diagnostics.Debug.WriteLine($"[DrawShape] Octagon expects 8 sectors. Current Denominator: {Denominator}. Will not draw.");
-                        canDraw = false;
-                    }
-                    break;
-                case ShapeType.Diamond: // Новая проверка
-                    if (Denominator != 4)
-                    {
-                        System.Diagnostics.Debug.WriteLine($"[DrawShape] Diamond expects 4 sectors. Current Denominator: {Denominator}. Will not draw.");
-                        canDraw = false;
-                    }
-                    break;
+                case ShapeType.Circle: if (Denominator <= 0) canDraw = false; break;
+                case ShapeType.Triangle: if (Denominator != 3) canDraw = false; break;
+                case ShapeType.Octagon: if (Denominator != 8) canDraw = false; break;
+                case ShapeType.Diamond: if (Denominator != 4) canDraw = false; break;
             }
 
-            if (!canDraw) return;
+            if (!canDraw)
+            {
+                System.Diagnostics.Debug.WriteLine($"[DrawShape] Cannot draw {CurrentShapeType} with Denominator {Denominator}.");
+                return;
+            }
 
+            // Создаем контуры секторов
             switch (CurrentShapeType)
             {
-                case ShapeType.Circle:
-                    DrawCircleSectors();
-                    break;
-                case ShapeType.Triangle:
-                    DrawTriangleSectors();
-                    break;
-                case ShapeType.Octagon:
-                    DrawOctagonSectors();
-                    break;
-                case ShapeType.Diamond: // Новый вызов
-                    DrawDiamondSectors();
-                    break;
+                case ShapeType.Circle: DrawCircleSectors(); break;
+                case ShapeType.Triangle: DrawTriangleSectors(); break;
+                case ShapeType.Octagon: DrawOctagonSectors(); break;
+                case ShapeType.Diamond: DrawDiamondSectors(); break;
             }
-            UpdateSectorColorsFromSelection();
+
+            // ИЗМЕНЕННАЯ ЛОГИКА ЗАЛИВКИ:
+            if (!IsInteractionEnabled) // Если интерактивность ВЫКЛЮЧЕНА (например, в режиме выбора вариантов)
+            {
+                // Закрашиваем сектора на основе TargetNumerator (предустановленная дробь)
+                UpdateSectorColorsFromTargetNumerator();
+            }
+            else // Если интерактивность ВКЛЮЧЕНА (например, в режиме обучения)
+            {
+                // Закрашиваем сектора на основе того, что выбрал пользователь (selectedSectorIndexes)
+                // Это важно, чтобы при изменении размера окна или другой перерисовке
+                // не сбрасывался выбор пользователя в режиме обучения.
+                UpdateSectorColorsFromUserSelection();
+            }
         }
 
         private void DrawCircleSectors()
         {
-            // Эта проверка уже есть в DrawShape, но дублирование не повредит
-            if (Denominator <= 0 || DrawingCanvas.ActualWidth == 0 || DrawingCanvas.ActualHeight == 0) return;
-
+            if (Denominator <= 0) return; // Дополнительная проверка
             Point center = new Point(DrawingCanvas.ActualWidth / 2, DrawingCanvas.ActualHeight / 2);
             double radius = Math.Min(DrawingCanvas.ActualWidth, DrawingCanvas.ActualHeight) / 2 * 0.9;
             double angleStep = 360.0 / Denominator;
@@ -183,129 +184,105 @@ namespace FractionTrainer
 
         private void DrawTriangleSectors()
         {
-            // Ожидается, что Denominator == 3
-            if (Denominator != 3 || DrawingCanvas.ActualWidth == 0 || DrawingCanvas.ActualHeight == 0) return;
-
-
+            if (Denominator != 3) return; // Дополнительная проверка
             double width = DrawingCanvas.ActualWidth;
             double height = DrawingCanvas.ActualHeight;
-            double padding = Math.Min(width, height) * 0.1; // Отступ от краев
-
-            // Вершины равностороннего треугольника, вписанного в уменьшенную область
-            Point p1 = new Point(width / 2, padding); // Верхняя
-            Point p2 = new Point(padding, height - padding); // Левая нижняя
-            Point p3 = new Point(width - padding, height - padding); // Правая нижняя
-
-            // Центроид
+            double padding = Math.Min(width, height) * 0.1;
+            Point p1 = new Point(width / 2, padding);
+            Point p2 = new Point(padding, height - padding);
+            Point p3 = new Point(width - padding, height - padding);
             Point centroid = new Point((p1.X + p2.X + p3.X) / 3, (p1.Y + p2.Y + p3.Y) / 3);
 
-            // Создаем 3 сектора (треугольника)
-            Path sectorA = CreateTriangleSectorPath(centroid, p1, p2); // Сектор 0
+            Path sectorA = CreateTriangleSectorPath(centroid, p1, p2);
             sectorA.MouseLeftButtonDown += (s, e) => Sector_Clicked(0);
             DrawingCanvas.Children.Add(sectorA);
 
-            Path sectorB = CreateTriangleSectorPath(centroid, p2, p3); // Сектор 1
+            Path sectorB = CreateTriangleSectorPath(centroid, p2, p3);
             sectorB.MouseLeftButtonDown += (s, e) => Sector_Clicked(1);
             DrawingCanvas.Children.Add(sectorB);
 
-            Path sectorC = CreateTriangleSectorPath(centroid, p3, p1); // Сектор 2
+            Path sectorC = CreateTriangleSectorPath(centroid, p3, p1);
             sectorC.MouseLeftButtonDown += (s, e) => Sector_Clicked(2);
             DrawingCanvas.Children.Add(sectorC);
         }
 
-        private Path CreateTriangleSectorPath(Point p1, Point p2, Point p3) // p1 - общая вершина (центр), p2, p3 - на контуре
+        private Path CreateTriangleSectorPath(Point c, Point v1, Point v2)
         {
             Path sectorPath = new Path { Stroke = StrokeColor, StrokeThickness = 1.5 };
             PathGeometry geometry = new PathGeometry();
-            PathFigure figure = new PathFigure { StartPoint = p1, IsClosed = true };
-            figure.Segments.Add(new LineSegment(p2, true));
-            figure.Segments.Add(new LineSegment(p3, true));
+            PathFigure figure = new PathFigure { StartPoint = c, IsClosed = true };
+            figure.Segments.Add(new LineSegment(v1, true));
+            figure.Segments.Add(new LineSegment(v2, true));
             geometry.Figures.Add(figure);
             sectorPath.Data = geometry;
             return sectorPath;
         }
 
-        // В классе FractionShapeVisualizer
         private void DrawOctagonSectors()
         {
-            // Ожидается, что Denominator == 8 для восьмиугольника
-            if (Denominator != 8 || DrawingCanvas.ActualWidth == 0 || DrawingCanvas.ActualHeight == 0) return;
-
+            if (Denominator != 8) return; // Дополнительная проверка
             Point center = new Point(DrawingCanvas.ActualWidth / 2, DrawingCanvas.ActualHeight / 2);
-            double radius = Math.Min(DrawingCanvas.ActualWidth, DrawingCanvas.ActualHeight) / 2 * 0.9; // Внешний радиус восьмиугольника
-            double angleStep = 360.0 / 8.0; // 45 градусов на сектор
-
+            double radius = Math.Min(DrawingCanvas.ActualWidth, DrawingCanvas.ActualHeight) / 2 * 0.9;
+            double angleStep = 360.0 / 8.0;
             Point[] vertices = new Point[8];
             for (int i = 0; i < 8; i++)
             {
                 vertices[i] = GetCartesianCoordinate(center, radius, i * angleStep);
             }
-
             for (int i = 0; i < 8; i++)
             {
                 Point p1 = vertices[i];
-                Point p2 = vertices[(i + 1) % 8]; // Следующая вершина, с замыканием на первую
-
-                // Создаем сектор как треугольник: центр - p1 - p2
-                Path sectorPath = new Path { Stroke = StrokeColor, StrokeThickness = 1.5 };
-                PathGeometry geometry = new PathGeometry();
-                PathFigure figure = new PathFigure { StartPoint = center, IsClosed = true };
-                figure.Segments.Add(new LineSegment(p1, true));
-                figure.Segments.Add(new LineSegment(p2, true));
-                geometry.Figures.Add(figure);
-                sectorPath.Data = geometry;
-
+                Point p2 = vertices[(i + 1) % 8];
+                Path sectorPath = CreateTriangleSectorPath(center, p1, p2); // Используем общий метод
                 int sectorIndex = i;
                 sectorPath.MouseLeftButtonDown += (s, e_args) => Sector_Clicked(sectorIndex);
                 DrawingCanvas.Children.Add(sectorPath);
             }
         }
 
-        // В классе FractionShapeVisualizer
         private void DrawDiamondSectors()
         {
-            // Ожидается, что Denominator == 4 для алмаза/квадрата
-            if (Denominator != 4 || DrawingCanvas.ActualWidth == 0 || DrawingCanvas.ActualHeight == 0) return;
-
+            if (Denominator != 4) return; // Дополнительная проверка
             double width = DrawingCanvas.ActualWidth;
             double height = DrawingCanvas.ActualHeight;
             Point center = new Point(width / 2, height / 2);
-
-            // Определяем размер алмаза, чтобы он вписывался с отступами
             double outerRadius = Math.Min(width, height) / 2 * 0.9;
-
-            // Вершины алмаза (квадрата, повернутого на 45 градусов)
-            // Они лежат на осях X и Y относительно центра, на расстоянии outerRadius
-            Point topVertex = new Point(center.X, center.Y - outerRadius);      // (cx, cy - r)
-            Point rightVertex = new Point(center.X + outerRadius, center.Y);  // (cx + r, cy)
-            Point bottomVertex = new Point(center.X, center.Y + outerRadius); // (cx, cy + r)
-            Point leftVertex = new Point(center.X - outerRadius, center.Y);   // (cx - r, cy)
-
+            Point topVertex = new Point(center.X, center.Y - outerRadius);
+            Point rightVertex = new Point(center.X + outerRadius, center.Y);
+            Point bottomVertex = new Point(center.X, center.Y + outerRadius);
+            Point leftVertex = new Point(center.X - outerRadius, center.Y);
             Point[] vertices = { topVertex, rightVertex, bottomVertex, leftVertex };
-
-            for (int i = 0; i < 4; i++) // 4 сектора
+            for (int i = 0; i < 4; i++)
             {
                 Point p1 = vertices[i];
-                Point p2 = vertices[(i + 1) % 4]; // Следующая вершина
-
-                // Создаем сектор как треугольник: центр - p1 - p2
-                // Используем тот же вспомогательный метод, что и для треугольника
-                Path sectorPath = CreateTriangleSectorPath(center, p1, p2);
-
+                Point p2 = vertices[(i + 1) % 4];
+                Path sectorPath = CreateTriangleSectorPath(center, p1, p2); // Используем общий метод
                 int sectorIndex = i;
                 sectorPath.MouseLeftButtonDown += (s, e_args) => Sector_Clicked(sectorIndex);
                 DrawingCanvas.Children.Add(sectorPath);
             }
         }
 
-        private void UpdateSectorColorsFromSelection()
+        // НОВЫЙ МЕТОД для закраски секторов на основе TargetNumerator
+        private void UpdateSectorColorsFromTargetNumerator()
         {
             for (int i = 0; i < DrawingCanvas.Children.Count; i++)
             {
                 if (DrawingCanvas.Children[i] is Path sectorPath)
                 {
-                    // i здесь - это индекс добавления в DrawingCanvas.Children,
-                    // который должен соответствовать sectorIndex (0, 1, 2 для треугольника; 0..N-1 для круга)
+                    // Закрашиваем, если индекс сектора меньше TargetNumerator
+                    sectorPath.Fill = (i < this.TargetNumerator) ? SelectedColor : UnselectedColor;
+                }
+            }
+        }
+
+        // Этот метод теперь будет использоваться ТОЛЬКО если IsInteractionEnabled = true
+        private void UpdateSectorColorsFromUserSelection()
+        {
+            for (int i = 0; i < DrawingCanvas.Children.Count; i++)
+            {
+                if (DrawingCanvas.Children[i] is Path sectorPath)
+                {
                     sectorPath.Fill = selectedSectorIndexes.Contains(i) ? SelectedColor : UnselectedColor;
                 }
             }
@@ -322,6 +299,13 @@ namespace FractionTrainer
 
         private void Sector_Clicked(int sectorIndex)
         {
+            if (!IsInteractionEnabled)
+            {
+                System.Diagnostics.Debug.WriteLine($"[FractionShapeVisualizer] Sector_Clicked ({sectorIndex}), но IsInteractionEnabled = false.");
+                return; // Ничего не делаем, если интерактивность отключена
+            }
+            System.Diagnostics.Debug.WriteLine($"[FractionShapeVisualizer] Sector_Clicked ({sectorIndex}), IsInteractionEnabled = true.");
+
             if (selectedSectorIndexes.Contains(sectorIndex))
             {
                 selectedSectorIndexes.Remove(sectorIndex);
@@ -330,7 +314,7 @@ namespace FractionTrainer
             {
                 selectedSectorIndexes.Add(sectorIndex);
             }
-            UpdateSectorColorsFromSelection();
+            UpdateSectorColorsFromUserSelection(); // Обновляем цвета на основе пользовательского выбора
         }
     }
 }
