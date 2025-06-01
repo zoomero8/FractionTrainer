@@ -85,7 +85,7 @@ namespace FractionTrainer // Убедитесь, что пространство
             else // ShapeType.Circle
             {
                 System.Diagnostics.Debug.WriteLine("[GenerateNewLevel] Логика для Круга");
-                int baseDen = random.Next(2, 7);
+                int baseDen = random.Next(2, 6);
                 System.Diagnostics.Debug.WriteLine($"[GenerateNewLevel] Circle: baseDen = {baseDen}");
                 int baseNum = random.Next(1, baseDen);
                 System.Diagnostics.Debug.WriteLine($"[GenerateNewLevel] Circle: baseNum = {baseNum}");
@@ -93,7 +93,7 @@ namespace FractionTrainer // Убедитесь, что пространство
                 baseNumeratorToDisplay = baseNum;
                 baseDenominatorToDisplay = baseDen;
 
-                int multiplier = random.Next(1, 5);
+                int multiplier = random.Next(1, 3);
                 System.Diagnostics.Debug.WriteLine($"[GenerateNewLevel] Circle: multiplier = {multiplier}");
 
                 totalSectorsInShape = baseDen * multiplier;
