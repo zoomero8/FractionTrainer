@@ -3,8 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:FractionTrainer"
-        mc:Ignorable="d"
+        xmlns:local="clr-namespace:FractionTrainer" mc:Ignorable="d"
         Title="Режим обучения"
         Height="720" Width="400"
         WindowStartupLocation="CenterScreen"
@@ -29,7 +28,7 @@
                    Grid.Row="1"/>
 
         <Border Grid.Row="2" Margin="30" Background="White" CornerRadius="10" BorderBrush="#FFDDDDDD" BorderThickness="1">
-            <local:FractionCircleControl x:Name="FractionDisplay" Margin="10"/>
+            <local:FractionShapeVisualizer x:Name="FractionDisplay" Margin="10"/>
         </Border>
 
         <Button x:Name="CheckButton" Content="Проверить" 

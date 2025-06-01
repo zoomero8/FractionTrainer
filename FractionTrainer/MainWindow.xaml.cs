@@ -12,26 +12,35 @@ namespace FractionTrainer
         private void LearningModeButton_Click(object sender, RoutedEventArgs e)
         {
             LearningModeWindow learningWindow = new LearningModeWindow();
-            learningWindow.Owner = this; // Устанавливаем MainWindow как владельца
-            learningWindow.Show();
-            learningWindow.Closed += (s, args) => {
-                if (this.Owner == null || !this.Owner.IsVisible) // Проверяем, если Owner (MainWindow) не был показан кнопкой Назад
+            learningWindow.Owner = this;
+
+            learningWindow.Closed += (s, args) =>
+            {
+                // Попытка показать Owner, если он существует и не является текущим окном,
+                // и если он не видим.
+                if (this.Owner != null && this.Owner != Application.Current.MainWindow && !this.Owner.IsVisible)
+                {
+                    this.Owner.Show();
+                }
+                else if (Application.Current.MainWindow != null && Application.Current.MainWindow != learningWindow && !Application.Current.MainWindow.IsVisible)
+                {
+                    // Если Owner не был установлен или это главное окно, пытаемся показать Application.Current.MainWindow
+                    Application.Current.MainWindow.Show();
+                }
+                // Если MainWindow было скрыто (this.Hide()), то оно this
+                else if (this.IsVisible == false)
                 {
                     this.Show();
                 }
             };
+
+            learningWindow.Show();
             this.Hide();
         }
 
         private void TestModeButton_Click(object sender, RoutedEventArgs e)
         {
-            // Здесь будет логика перехода к экрану/режиму проверки знаний
-            MessageBox.Show("Переход в режим проверки знаний!"); // Временная заглушка
-
-            // TODO: Создать и показать окно/страницу режима проверки знаний
-            // TestModeWindow testWindow = new TestModeWindow();
-            // testWindow.Show();
-            // this.Close(); // или this.Hide();
+            MessageBox.Show("Режим проверки знаний еще не реализован.", "Информация");
         }
     }
 }

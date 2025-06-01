@@ -1,62 +1,90 @@
 ﻿using System;
 using System.Windows;
 
-namespace FractionTrainer
+namespace FractionTrainer // Убедитесь, что пространство имен совпадает
 {
     public partial class LearningModeWindow : Window
     {
         private Random random = new Random();
 
-        // Эти поля теперь будут хранить информацию о *визуальном представлении* на круге
-        // и количестве секторов, которые реально нужно выбрать
-        private int sectorsToSelect; // Сколько секторов пользователь должен выбрать на круге
-        private int totalSectorsInCircle; // Общее количество секторов на круге
-
-        // Для отображения базовой дроби
+        private int sectorsToSelect;
+        private int totalSectorsInShape; // Переименовано для ясности
         private int baseNumeratorToDisplay;
         private int baseDenominatorToDisplay;
 
-
         public LearningModeWindow()
         {
-            InitializeComponent();
+            InitializeComponent(); // Убедитесь, что эта строка не вызывает ошибок
             GenerateNewLevel();
         }
 
         private void GenerateNewLevel()
         {
-            // 1. Генерируем простую базовую дробь (числитель и знаменатель)
-            int baseDen = random.Next(2, 5); // Базовый знаменатель, например, от 2 до 4 (чтобы не слишком сложно)
-            int baseNum = random.Next(1, baseDen); // Базовый числитель, меньше знаменателя
+            ShapeType selectedShape;
+            if (random.Next(0, 2) == 0)
+            {
+                selectedShape = ShapeType.Circle;
+            }
+            else
+            {
+                selectedShape = ShapeType.Triangle;
+            }
 
-            // Сохраняем для отображения
-            baseNumeratorToDisplay = baseNum;
-            baseDenominatorToDisplay = baseDen;
+            if (FractionDisplay == null) // Добавлена проверка на null
+            {
+                System.Diagnostics.Debug.WriteLine("[GenerateNewLevel] FractionDisplay is NULL before setting shape type!");
+                return; // Выходим, если контрол не создан
+            }
+            FractionDisplay.CurrentShapeType = selectedShape;
 
-            // 2. Выбираем множитель для усложнения (чтобы круг имел больше долей)
-            // Множитель k=1 означает, что круг будет соответствовать базовой дроби (как раньше)
-            // k=2, 3 и т.д. усложняют задачу
-            int multiplier = random.Next(1, 4); // Множитель от 1 до 3
+            if (selectedShape == ShapeType.Triangle)
+            {
+                baseDenominatorToDisplay = 3; // Знаменатель для отображения всегда 3
+                baseNumeratorToDisplay = random.Next(1, baseDenominatorToDisplay + 1); // Числитель 1, 2 или 3 (1/3, 2/3, 3/3)
+                                                                                       // Если хотите только правильные дроби (меньше 1), то random.Next(1, baseDenominatorToDisplay)
 
-            // 3. Рассчитываем параметры для круга
-            totalSectorsInCircle = baseDen * multiplier;
-            sectorsToSelect = baseNum * multiplier;
+                totalSectorsInShape = 3;
+                sectorsToSelect = baseNumeratorToDisplay; // Сколько нужно выбрать секторов треугольника
+            }
+            else // ShapeType.Circle
+            {
+                int baseDen = random.Next(2, 5);
+                int baseNum = random.Next(1, baseDen);
 
-            // Обновляем текстовое поле, чтобы показать базовую дробь
-            TargetFractionTextBlock.Text = $"{baseNumeratorToDisplay}/{baseDenominatorToDisplay}";
+                baseNumeratorToDisplay = baseNum;
+                baseDenominatorToDisplay = baseDen;
 
-            // Настраиваем FractionCircleControl
-            // FractionDisplay.TargetNumerator теперь не так важен, если контрол не использует его для подсказок
-            // Главное - правильно установить Denominator для отрисовки круга
-            FractionDisplay.TargetNumerator = sectorsToSelect; // Можно оставить для консистентности или если понадобится
-            FractionDisplay.Denominator = totalSectorsInCircle;
-            FractionDisplay.ResetUserSelectionAndDraw(); // Сбрасываем предыдущий выбор
+                int multiplier = random.Next(1, 4);
+
+                totalSectorsInShape = baseDen * multiplier;
+                sectorsToSelect = baseNum * multiplier;
+            }
+
+            if (TargetFractionTextBlock != null)
+            {
+                TargetFractionTextBlock.Text = $"{baseNumeratorToDisplay}/{baseDenominatorToDisplay}";
+            }
+
+            if (FractionDisplay != null)
+            {
+                FractionDisplay.TargetNumerator = sectorsToSelect;
+                FractionDisplay.Denominator = totalSectorsInShape; // Для треугольника это будет 3
+                FractionDisplay.ResetUserSelectionAndDraw();
+            }
         }
 
         private void CheckButton_Click(object sender, RoutedEventArgs e)
         {
             System.Diagnostics.Debug.WriteLine($"[CheckButton_Click] Перед вызовом FractionDisplay.UserSelectedSectorsCount.");
             int userSelection = -1;
+
+            if (FractionDisplay == null)
+            {
+                System.Diagnostics.Debug.WriteLine("[CheckButton_Click] FractionDisplay IS NULL!");
+                MessageBox.Show("Ошибка: компонент отображения дроби не инициализирован.", "Критическая ошибка");
+                return;
+            }
+
             try
             {
                 userSelection = FractionDisplay.UserSelectedSectorsCount;
@@ -64,10 +92,11 @@ namespace FractionTrainer
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"[CheckButton_Click] ИСКЛЮЧЕНИЕ при вызове UserSelectedSectorsCount: {ex.ToString()}");
+                MessageBox.Show($"Произошла ошибка при получении выбора: {ex.Message}", "Ошибка");
+                return;
             }
             System.Diagnostics.Debug.WriteLine($"[CheckButton_Click] СРАЗУ ПОСЛЕ вызова. userSelection = {userSelection}");
 
-            // Теперь сравниваем выбор пользователя с рассчитанным количеством секторов 'sectorsToSelect'
             if (userSelection == sectorsToSelect)
             {
                 MessageBox.Show("Правильно! Следующий уровень.", "Результат");
@@ -75,16 +104,17 @@ namespace FractionTrainer
             }
             else
             {
-                // В сообщении об ошибке используем totalSectorsInCircle
-                MessageBox.Show($"Неправильно. Вы выбрали {userSelection} из {totalSectorsInCircle}. Попробуйте еще раз! (Нужно было собрать дробь {baseNumeratorToDisplay}/{baseDenominatorToDisplay})", "Результат");
+                MessageBox.Show($"Неправильно. Вы выбрали {userSelection} из {totalSectorsInShape}. Попробуйте еще раз! (Нужно было собрать дробь {baseNumeratorToDisplay}/{baseDenominatorToDisplay})", "Результат");
             }
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            if (this.Owner != null)
+            var ownerWindow = this.Owner ?? Application.Current.MainWindow;
+            if (ownerWindow != null && ownerWindow != this) // Не показываем сами себя, если мы и есть MainWindow
             {
-                this.Owner.Show();
+                if (!ownerWindow.IsVisible) ownerWindow.Show();
+                ownerWindow.Focus(); // Передаем фокус
             }
             this.Close();
         }
