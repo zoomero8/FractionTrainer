@@ -21,43 +21,71 @@ namespace FractionTrainer // Убедитесь, что пространство
         private void GenerateNewLevel()
         {
             ShapeType selectedShape;
-            if (random.Next(0, 2) == 0)
+            int shapeChoice = random.Next(0, 3); // 0: Circle, 1: Triangle, 2: Octagon
+
+            switch (shapeChoice)
             {
-                selectedShape = ShapeType.Circle;
-            }
-            else
-            {
-                selectedShape = ShapeType.Triangle;
+                case 0:
+                    selectedShape = ShapeType.Circle;
+                    break;
+                case 1:
+                    selectedShape = ShapeType.Triangle;
+                    break;
+                default: // case 2
+                    selectedShape = ShapeType.Octagon;
+                    break;
             }
 
-            if (FractionDisplay == null) // Добавлена проверка на null
+            if (FractionDisplay == null)
             {
                 System.Diagnostics.Debug.WriteLine("[GenerateNewLevel] FractionDisplay is NULL before setting shape type!");
-                return; // Выходим, если контрол не создан
+                return;
             }
             FractionDisplay.CurrentShapeType = selectedShape;
 
             if (selectedShape == ShapeType.Triangle)
             {
-                baseDenominatorToDisplay = 3; // Знаменатель для отображения всегда 3
-                baseNumeratorToDisplay = random.Next(1, baseDenominatorToDisplay + 1); // Числитель 1, 2 или 3 (1/3, 2/3, 3/3)
-                                                                                       // Если хотите только правильные дроби (меньше 1), то random.Next(1, baseDenominatorToDisplay)
-
                 totalSectorsInShape = 3;
-                sectorsToSelect = baseNumeratorToDisplay; // Сколько нужно выбрать секторов треугольника
+                // Базовая задача: выбрать 1 или 2 сектора (избегаем 3/3)
+                sectorsToSelect = random.Next(1, 3); // Генерирует 1 или 2
+
+                // Умножаем базовую дробь (sectorsToSelect / totalSectorsInShape) для усложнения
+                int multiplier = random.Next(2, 5); // Множитель от 2 до 4
+                baseNumeratorToDisplay = sectorsToSelect * multiplier;
+                baseDenominatorToDisplay = totalSectorsInShape * multiplier;
+                // Пример: если sectorsToSelect=1, показываем 2/6, 3/9, или 4/12. Пользователь должен сократить до 1/3.
+            }
+            else if (selectedShape == ShapeType.Octagon)
+            {
+                totalSectorsInShape = 8;
+                // Генерируем "истинный" числитель для 8 секторов (избегаем 8/8)
+                int trueNumeratorForOctagon = random.Next(1, 8); // Генерирует от 1 до 7
+
+                sectorsToSelect = trueNumeratorForOctagon;
+
+                // Сокращаем дробь (trueNumeratorForOctagon / totalSectorsInShape) для отображения
+                int commonDivisor = GCD(trueNumeratorForOctagon, totalSectorsInShape);
+                baseNumeratorToDisplay = trueNumeratorForOctagon / commonDivisor;
+                baseDenominatorToDisplay = totalSectorsInShape / commonDivisor;
+                // Пример: если trueNumeratorForOctagon=6, то дробь 6/8, commonDivisor=2, отображаем 3/4.
+                // Пользователь видит 3/4 и должен выбрать 6 из 8 секторов.
             }
             else // ShapeType.Circle
             {
-                int baseDen = random.Next(2, 5);
-                int baseNum = random.Next(1, baseDen);
+                // Логика для круга: базовый знаменатель 2-6, множитель 1-4
+                // Гарантируем, что базовая дробь не N/N
+                int baseDen = random.Next(2, 7); // Базовый знаменатель от 2 до 6
+                int baseNum = random.Next(1, baseDen); // Базовый числитель от 1 до baseDen-1
 
                 baseNumeratorToDisplay = baseNum;
                 baseDenominatorToDisplay = baseDen;
 
-                int multiplier = random.Next(1, 4);
+                int multiplier = random.Next(1, 5); // Множитель от 1 до 4
 
                 totalSectorsInShape = baseDen * multiplier;
                 sectorsToSelect = baseNum * multiplier;
+                // Эта логика уже гарантирует, что sectorsToSelect < totalSectorsInShape,
+                // так как baseNum < baseDen.
             }
 
             if (TargetFractionTextBlock != null)
@@ -67,8 +95,8 @@ namespace FractionTrainer // Убедитесь, что пространство
 
             if (FractionDisplay != null)
             {
-                FractionDisplay.TargetNumerator = sectorsToSelect;
-                FractionDisplay.Denominator = totalSectorsInShape; // Для треугольника это будет 3
+                FractionDisplay.TargetNumerator = sectorsToSelect; // Это "истинное" количество секторов для выбора
+                FractionDisplay.Denominator = totalSectorsInShape; // Это количество секторов на фигуре
                 FractionDisplay.ResetUserSelectionAndDraw();
             }
         }
@@ -117,6 +145,16 @@ namespace FractionTrainer // Убедитесь, что пространство
                 ownerWindow.Focus(); // Передаем фокус
             }
             this.Close();
+        }
+        private static int GCD(int a, int b)
+        {
+            while (b != 0)
+            {
+                int temp = b;
+                b = a % b;
+                a = temp;
+            }
+            return Math.Abs(a); // Возвращаем абсолютное значение на случай отрицательных чисел, хотя здесь они не ожидаются
         }
     }
 }

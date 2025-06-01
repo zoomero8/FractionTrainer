@@ -11,7 +11,8 @@ namespace FractionTrainer
     public enum ShapeType
     {
         Circle,
-        Triangle
+        Triangle,
+        Octagon
     }
 
     public partial class FractionShapeVisualizer : UserControl
@@ -100,18 +101,31 @@ namespace FractionTrainer
             DrawingCanvas.Children.Clear();
 
             if (DrawingCanvas.ActualWidth == 0 || DrawingCanvas.ActualHeight == 0) return;
-            if (Denominator <= 0 && CurrentShapeType == ShapeType.Circle) return; // Для круга знаменатель важен
-            if (CurrentShapeType == ShapeType.Triangle && Denominator != 3)
+
+            // Проверка знаменателя в зависимости от типа фигуры
+            bool canDraw = true;
+            switch (CurrentShapeType)
             {
-                // Для треугольника мы ожидаем Denominator = 3. Если это не так, можно не рисовать или выдать предупреждение.
-                // Или можно принудительно установить Denominator = 3 если CurrentShapeType == ShapeType.Triangle
-                // в обработчике OnVisualPropertiesChanged или здесь.
-                // Пока что, если Denominator не 3 для треугольника, он не будет корректно нарисован текущей логикой.
-                System.Diagnostics.Debug.WriteLineIf(Denominator != 3, "[DrawShape] Triangle expects 3 sectors (Denominator=3). Current Denominator: " + Denominator);
-                // Не будем рисовать, если Denominator для треугольника не 3, чтобы избежать ошибок в DrawTriangleSectors
-                if (CurrentShapeType == ShapeType.Triangle && Denominator != 3) return;
+                case ShapeType.Circle:
+                    if (Denominator <= 0) canDraw = false;
+                    break;
+                case ShapeType.Triangle:
+                    if (Denominator != 3)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"[DrawShape] Triangle expects 3 sectors (Denominator=3). Current Denominator: {Denominator}. Will not draw.");
+                        canDraw = false;
+                    }
+                    break;
+                case ShapeType.Octagon:
+                    if (Denominator != 8)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"[DrawShape] Octagon expects 8 sectors (Denominator=8). Current Denominator: {Denominator}. Will not draw.");
+                        canDraw = false;
+                    }
+                    break;
             }
 
+            if (!canDraw) return;
 
             switch (CurrentShapeType)
             {
@@ -120,6 +134,9 @@ namespace FractionTrainer
                     break;
                 case ShapeType.Triangle:
                     DrawTriangleSectors();
+                    break;
+                case ShapeType.Octagon:
+                    DrawOctagonSectors(); // Новый вызов
                     break;
             }
             UpdateSectorColorsFromSelection();
@@ -196,6 +213,42 @@ namespace FractionTrainer
             geometry.Figures.Add(figure);
             sectorPath.Data = geometry;
             return sectorPath;
+        }
+
+        // В классе FractionShapeVisualizer
+        private void DrawOctagonSectors()
+        {
+            // Ожидается, что Denominator == 8 для восьмиугольника
+            if (Denominator != 8 || DrawingCanvas.ActualWidth == 0 || DrawingCanvas.ActualHeight == 0) return;
+
+            Point center = new Point(DrawingCanvas.ActualWidth / 2, DrawingCanvas.ActualHeight / 2);
+            double radius = Math.Min(DrawingCanvas.ActualWidth, DrawingCanvas.ActualHeight) / 2 * 0.9; // Внешний радиус восьмиугольника
+            double angleStep = 360.0 / 8.0; // 45 градусов на сектор
+
+            Point[] vertices = new Point[8];
+            for (int i = 0; i < 8; i++)
+            {
+                vertices[i] = GetCartesianCoordinate(center, radius, i * angleStep);
+            }
+
+            for (int i = 0; i < 8; i++)
+            {
+                Point p1 = vertices[i];
+                Point p2 = vertices[(i + 1) % 8]; // Следующая вершина, с замыканием на первую
+
+                // Создаем сектор как треугольник: центр - p1 - p2
+                Path sectorPath = new Path { Stroke = StrokeColor, StrokeThickness = 1.5 };
+                PathGeometry geometry = new PathGeometry();
+                PathFigure figure = new PathFigure { StartPoint = center, IsClosed = true };
+                figure.Segments.Add(new LineSegment(p1, true));
+                figure.Segments.Add(new LineSegment(p2, true));
+                geometry.Figures.Add(figure);
+                sectorPath.Data = geometry;
+
+                int sectorIndex = i;
+                sectorPath.MouseLeftButtonDown += (s, e_args) => Sector_Clicked(sectorIndex);
+                DrawingCanvas.Children.Add(sectorPath);
+            }
         }
 
         private void UpdateSectorColorsFromSelection()
