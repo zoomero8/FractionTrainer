@@ -12,7 +12,8 @@ namespace FractionTrainer
     {
         Circle,
         Triangle,
-        Octagon
+        Octagon,
+        Diamond
     }
 
     public partial class FractionShapeVisualizer : UserControl
@@ -102,7 +103,6 @@ namespace FractionTrainer
 
             if (DrawingCanvas.ActualWidth == 0 || DrawingCanvas.ActualHeight == 0) return;
 
-            // Проверка знаменателя в зависимости от типа фигуры
             bool canDraw = true;
             switch (CurrentShapeType)
             {
@@ -112,14 +112,21 @@ namespace FractionTrainer
                 case ShapeType.Triangle:
                     if (Denominator != 3)
                     {
-                        System.Diagnostics.Debug.WriteLine($"[DrawShape] Triangle expects 3 sectors (Denominator=3). Current Denominator: {Denominator}. Will not draw.");
+                        System.Diagnostics.Debug.WriteLine($"[DrawShape] Triangle expects 3 sectors. Current Denominator: {Denominator}. Will not draw.");
                         canDraw = false;
                     }
                     break;
                 case ShapeType.Octagon:
                     if (Denominator != 8)
                     {
-                        System.Diagnostics.Debug.WriteLine($"[DrawShape] Octagon expects 8 sectors (Denominator=8). Current Denominator: {Denominator}. Will not draw.");
+                        System.Diagnostics.Debug.WriteLine($"[DrawShape] Octagon expects 8 sectors. Current Denominator: {Denominator}. Will not draw.");
+                        canDraw = false;
+                    }
+                    break;
+                case ShapeType.Diamond: // Новая проверка
+                    if (Denominator != 4)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"[DrawShape] Diamond expects 4 sectors. Current Denominator: {Denominator}. Will not draw.");
                         canDraw = false;
                     }
                     break;
@@ -136,7 +143,10 @@ namespace FractionTrainer
                     DrawTriangleSectors();
                     break;
                 case ShapeType.Octagon:
-                    DrawOctagonSectors(); // Новый вызов
+                    DrawOctagonSectors();
+                    break;
+                case ShapeType.Diamond: // Новый вызов
+                    DrawDiamondSectors();
                     break;
             }
             UpdateSectorColorsFromSelection();
@@ -203,13 +213,13 @@ namespace FractionTrainer
             DrawingCanvas.Children.Add(sectorC);
         }
 
-        private Path CreateTriangleSectorPath(Point c, Point v1, Point v2)
+        private Path CreateTriangleSectorPath(Point p1, Point p2, Point p3) // p1 - общая вершина (центр), p2, p3 - на контуре
         {
             Path sectorPath = new Path { Stroke = StrokeColor, StrokeThickness = 1.5 };
             PathGeometry geometry = new PathGeometry();
-            PathFigure figure = new PathFigure { StartPoint = c, IsClosed = true };
-            figure.Segments.Add(new LineSegment(v1, true));
-            figure.Segments.Add(new LineSegment(v2, true));
+            PathFigure figure = new PathFigure { StartPoint = p1, IsClosed = true };
+            figure.Segments.Add(new LineSegment(p2, true));
+            figure.Segments.Add(new LineSegment(p3, true));
             geometry.Figures.Add(figure);
             sectorPath.Data = geometry;
             return sectorPath;
@@ -244,6 +254,43 @@ namespace FractionTrainer
                 figure.Segments.Add(new LineSegment(p2, true));
                 geometry.Figures.Add(figure);
                 sectorPath.Data = geometry;
+
+                int sectorIndex = i;
+                sectorPath.MouseLeftButtonDown += (s, e_args) => Sector_Clicked(sectorIndex);
+                DrawingCanvas.Children.Add(sectorPath);
+            }
+        }
+
+        // В классе FractionShapeVisualizer
+        private void DrawDiamondSectors()
+        {
+            // Ожидается, что Denominator == 4 для алмаза/квадрата
+            if (Denominator != 4 || DrawingCanvas.ActualWidth == 0 || DrawingCanvas.ActualHeight == 0) return;
+
+            double width = DrawingCanvas.ActualWidth;
+            double height = DrawingCanvas.ActualHeight;
+            Point center = new Point(width / 2, height / 2);
+
+            // Определяем размер алмаза, чтобы он вписывался с отступами
+            double outerRadius = Math.Min(width, height) / 2 * 0.9;
+
+            // Вершины алмаза (квадрата, повернутого на 45 градусов)
+            // Они лежат на осях X и Y относительно центра, на расстоянии outerRadius
+            Point topVertex = new Point(center.X, center.Y - outerRadius);      // (cx, cy - r)
+            Point rightVertex = new Point(center.X + outerRadius, center.Y);  // (cx + r, cy)
+            Point bottomVertex = new Point(center.X, center.Y + outerRadius); // (cx, cy + r)
+            Point leftVertex = new Point(center.X - outerRadius, center.Y);   // (cx - r, cy)
+
+            Point[] vertices = { topVertex, rightVertex, bottomVertex, leftVertex };
+
+            for (int i = 0; i < 4; i++) // 4 сектора
+            {
+                Point p1 = vertices[i];
+                Point p2 = vertices[(i + 1) % 4]; // Следующая вершина
+
+                // Создаем сектор как треугольник: центр - p1 - p2
+                // Используем тот же вспомогательный метод, что и для треугольника
+                Path sectorPath = CreateTriangleSectorPath(center, p1, p2);
 
                 int sectorIndex = i;
                 sectorPath.MouseLeftButtonDown += (s, e_args) => Sector_Clicked(sectorIndex);

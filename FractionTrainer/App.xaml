@@ -32,6 +32,40 @@
             </Setter>
         </Style>
 
+        <Style x:Key="ArrowBackButton" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#FF4A4A4A"/>
+            <Setter Property="Width" Value="44"/>
+            <Setter Property="Height" Value="44"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Margin" Value="5,0,0,0"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="22">
+                            <Viewbox Width="10" Height="10" Margin="1" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <Path Data="M4,0 L0,4 L4,8 M0.5,4 L8,4" 
+                                      Stroke="{TemplateBinding Foreground}" 
+                                      StrokeThickness="1.2"
+                                      StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"/>
+                            </Viewbox>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#1A000000"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#33000000"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <Style x:Key="ModernTitleText" TargetType="TextBlock">
             <Setter Property="FontSize" Value="26"/>
             <Setter Property="FontWeight" Value="SemiBold"/>

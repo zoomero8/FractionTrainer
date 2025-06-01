@@ -18,94 +18,109 @@ namespace FractionTrainer // Убедитесь, что пространство
             GenerateNewLevel();
         }
 
+        // В классе LearningModeWindow
+        // В файле LearningModeWindow.xaml.cs
+
         private void GenerateNewLevel()
         {
+            System.Diagnostics.Debug.WriteLine("--- GenerateNewLevel: Начало ---");
+
             ShapeType selectedShape;
-            int shapeChoice = random.Next(0, 3); // 0: Circle, 1: Triangle, 2: Octagon
+            int shapeChoice = random.Next(0, 4); // 0: Circle, 1: Triangle, 2: Octagon, 3: Diamond
+            System.Diagnostics.Debug.WriteLine($"[GenerateNewLevel] shapeChoice (0-C, 1-T, 2-O, 3-D): {shapeChoice}");
 
             switch (shapeChoice)
             {
-                case 0:
-                    selectedShape = ShapeType.Circle;
-                    break;
-                case 1:
-                    selectedShape = ShapeType.Triangle;
-                    break;
-                default: // case 2
-                    selectedShape = ShapeType.Octagon;
+                case 0: selectedShape = ShapeType.Circle; break;
+                case 1: selectedShape = ShapeType.Triangle; break;
+                case 2: selectedShape = ShapeType.Octagon; break;
+                default: // case 3
+                    selectedShape = ShapeType.Diamond;
                     break;
             }
+            System.Diagnostics.Debug.WriteLine($"[GenerateNewLevel] selectedShape: {selectedShape}");
 
             if (FractionDisplay == null)
             {
-                System.Diagnostics.Debug.WriteLine("[GenerateNewLevel] FractionDisplay is NULL before setting shape type!");
+                System.Diagnostics.Debug.WriteLine("[GenerateNewLevel] FractionDisplay is NULL. Выход.");
                 return;
             }
             FractionDisplay.CurrentShapeType = selectedShape;
 
             if (selectedShape == ShapeType.Triangle)
             {
+                System.Diagnostics.Debug.WriteLine("[GenerateNewLevel] Логика для Треугольника");
                 totalSectorsInShape = 3;
-                // Базовая задача: выбрать 1 или 2 сектора (избегаем 3/3)
-                sectorsToSelect = random.Next(1, 3); // Генерирует 1 или 2
+                sectorsToSelect = random.Next(1, 3); // 1 или 2
+                System.Diagnostics.Debug.WriteLine($"[GenerateNewLevel] Triangle: sectorsToSelect = {sectorsToSelect}");
 
-                // Умножаем базовую дробь (sectorsToSelect / totalSectorsInShape) для усложнения
                 int multiplier = random.Next(2, 5); // Множитель от 2 до 4
+                System.Diagnostics.Debug.WriteLine($"[GenerateNewLevel] Triangle: multiplier = {multiplier}");
+
                 baseNumeratorToDisplay = sectorsToSelect * multiplier;
                 baseDenominatorToDisplay = totalSectorsInShape * multiplier;
-                // Пример: если sectorsToSelect=1, показываем 2/6, 3/9, или 4/12. Пользователь должен сократить до 1/3.
             }
             else if (selectedShape == ShapeType.Octagon)
             {
+                System.Diagnostics.Debug.WriteLine("[GenerateNewLevel] Логика для Восьмиугольника");
                 totalSectorsInShape = 8;
-                // Генерируем "истинный" числитель для 8 секторов (избегаем 8/8)
-                int trueNumeratorForOctagon = random.Next(1, 8); // Генерирует от 1 до 7
-
+                int trueNumeratorForOctagon = random.Next(1, 8); // от 1 до 7
+                System.Diagnostics.Debug.WriteLine($"[GenerateNewLevel] Octagon: trueNumeratorForOctagon = {trueNumeratorForOctagon}");
                 sectorsToSelect = trueNumeratorForOctagon;
 
-                // Сокращаем дробь (trueNumeratorForOctagon / totalSectorsInShape) для отображения
                 int commonDivisor = GCD(trueNumeratorForOctagon, totalSectorsInShape);
+                System.Diagnostics.Debug.WriteLine($"[GenerateNewLevel] Octagon: commonDivisor = {commonDivisor}");
+
                 baseNumeratorToDisplay = trueNumeratorForOctagon / commonDivisor;
                 baseDenominatorToDisplay = totalSectorsInShape / commonDivisor;
-                // Пример: если trueNumeratorForOctagon=6, то дробь 6/8, commonDivisor=2, отображаем 3/4.
-                // Пользователь видит 3/4 и должен выбрать 6 из 8 секторов.
+            }
+            else if (selectedShape == ShapeType.Diamond)
+            {
+                System.Diagnostics.Debug.WriteLine("[GenerateNewLevel] Логика для Алмаза");
+                totalSectorsInShape = 4;
+                baseNumeratorToDisplay = random.Next(1, 4); // 1, 2, или 3
+                baseDenominatorToDisplay = 4;
+                sectorsToSelect = baseNumeratorToDisplay;
             }
             else // ShapeType.Circle
             {
-                // Логика для круга: базовый знаменатель 2-6, множитель 1-4
-                // Гарантируем, что базовая дробь не N/N
-                int baseDen = random.Next(2, 7); // Базовый знаменатель от 2 до 6
-                int baseNum = random.Next(1, baseDen); // Базовый числитель от 1 до baseDen-1
+                System.Diagnostics.Debug.WriteLine("[GenerateNewLevel] Логика для Круга");
+                int baseDen = random.Next(2, 7);
+                System.Diagnostics.Debug.WriteLine($"[GenerateNewLevel] Circle: baseDen = {baseDen}");
+                int baseNum = random.Next(1, baseDen);
+                System.Diagnostics.Debug.WriteLine($"[GenerateNewLevel] Circle: baseNum = {baseNum}");
 
                 baseNumeratorToDisplay = baseNum;
                 baseDenominatorToDisplay = baseDen;
 
-                int multiplier = random.Next(1, 5); // Множитель от 1 до 4
+                int multiplier = random.Next(1, 5);
+                System.Diagnostics.Debug.WriteLine($"[GenerateNewLevel] Circle: multiplier = {multiplier}");
 
                 totalSectorsInShape = baseDen * multiplier;
                 sectorsToSelect = baseNum * multiplier;
-                // Эта логика уже гарантирует, что sectorsToSelect < totalSectorsInShape,
-                // так как baseNum < baseDen.
             }
 
-            if (NumeratorTextBlock != null && DenominatorTextBlock != null) // Проверяем оба TextBlock'a
+            System.Diagnostics.Debug.WriteLine($"[GenerateNewLevel] Итоговые значения перед отображением: baseNumeratorToDisplay = {baseNumeratorToDisplay}, baseDenominatorToDisplay = {baseDenominatorToDisplay}");
+            System.Diagnostics.Debug.WriteLine($"[GenerateNewLevel] Итоговые значения для контрола: sectorsToSelect = {sectorsToSelect}, totalSectorsInShape = {totalSectorsInShape}");
+
+
+            if (NumeratorTextBlock != null && DenominatorTextBlock != null)
             {
                 NumeratorTextBlock.Text = baseNumeratorToDisplay.ToString();
                 DenominatorTextBlock.Text = baseDenominatorToDisplay.ToString();
             }
             else
             {
-                // Если элементы не найдены (что было бы странно, если XAML корректен),
-                // можно вывести отладочное сообщение
-                System.Diagnostics.Debug.WriteLine("[GenerateNewLevel] NumeratorTextBlock or DenominatorTextBlock is NULL!");
+                System.Diagnostics.Debug.WriteLine("[GenerateNewLevel] ОШИБКА: NumeratorTextBlock или DenominatorTextBlock не найдены!");
             }
 
             if (FractionDisplay != null)
             {
-                FractionDisplay.TargetNumerator = sectorsToSelect; // Это "истинное" количество секторов для выбора
-                FractionDisplay.Denominator = totalSectorsInShape; // Это количество секторов на фигуре
+                FractionDisplay.TargetNumerator = sectorsToSelect;
+                FractionDisplay.Denominator = totalSectorsInShape;
                 FractionDisplay.ResetUserSelectionAndDraw();
             }
+            System.Diagnostics.Debug.WriteLine("--- GenerateNewLevel: Конец ---");
         }
 
         private void CheckButton_Click(object sender, RoutedEventArgs e)
