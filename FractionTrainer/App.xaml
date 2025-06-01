@@ -41,7 +41,7 @@
         </Style>
 
         <Style x:Key="FractionDisplayText" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="64"/>
+            <Setter Property="FontSize" Value="50"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="Foreground" Value="#FF007AFF"/>
             <Setter Property="HorizontalAlignment" Value="Center"/>

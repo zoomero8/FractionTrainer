@@ -88,9 +88,16 @@ namespace FractionTrainer // Убедитесь, что пространство
                 // так как baseNum < baseDen.
             }
 
-            if (TargetFractionTextBlock != null)
+            if (NumeratorTextBlock != null && DenominatorTextBlock != null) // Проверяем оба TextBlock'a
             {
-                TargetFractionTextBlock.Text = $"{baseNumeratorToDisplay}/{baseDenominatorToDisplay}";
+                NumeratorTextBlock.Text = baseNumeratorToDisplay.ToString();
+                DenominatorTextBlock.Text = baseDenominatorToDisplay.ToString();
+            }
+            else
+            {
+                // Если элементы не найдены (что было бы странно, если XAML корректен),
+                // можно вывести отладочное сообщение
+                System.Diagnostics.Debug.WriteLine("[GenerateNewLevel] NumeratorTextBlock or DenominatorTextBlock is NULL!");
             }
 
             if (FractionDisplay != null)
@@ -109,7 +116,7 @@ namespace FractionTrainer // Убедитесь, что пространство
             if (FractionDisplay == null)
             {
                 System.Diagnostics.Debug.WriteLine("[CheckButton_Click] FractionDisplay IS NULL!");
-                MessageBox.Show("Ошибка: компонент отображения дроби не инициализирован.", "Критическая ошибка");
+                CustomMessageBoxWindow.Show("Ошибка: компонент отображения дроби не инициализирован.", "Критическая ошибка", this);
                 return;
             }
 
@@ -120,19 +127,21 @@ namespace FractionTrainer // Убедитесь, что пространство
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"[CheckButton_Click] ИСКЛЮЧЕНИЕ при вызове UserSelectedSectorsCount: {ex.ToString()}");
-                MessageBox.Show($"Произошла ошибка при получении выбора: {ex.Message}", "Ошибка");
+                CustomMessageBoxWindow.Show($"Произошла ошибка при получении выбора: {ex.Message}", "Ошибка", this);
                 return;
             }
             System.Diagnostics.Debug.WriteLine($"[CheckButton_Click] СРАЗУ ПОСЛЕ вызова. userSelection = {userSelection}");
 
             if (userSelection == sectorsToSelect)
             {
-                MessageBox.Show("Правильно! Следующий уровень.", "Результат");
+                // Используем наше кастомное окно
+                CustomMessageBoxWindow.Show("Правильно! Следующий уровень.", "Результат", this);
                 GenerateNewLevel();
             }
             else
             {
-                MessageBox.Show($"Неправильно. Вы выбрали {userSelection} из {totalSectorsInShape}. Попробуйте еще раз! (Нужно было собрать дробь {baseNumeratorToDisplay}/{baseDenominatorToDisplay})", "Результат");
+                // Используем наше кастомное окно
+                CustomMessageBoxWindow.Show($"Неправильно. Вы выбрали {userSelection} из {totalSectorsInShape}. Попробуйте еще раз! (Нужно было собрать дробь {baseNumeratorToDisplay}/{baseDenominatorToDisplay})", "Результат", this);
             }
         }
 
