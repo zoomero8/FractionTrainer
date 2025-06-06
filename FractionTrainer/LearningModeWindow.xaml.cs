@@ -1,184 +1,186 @@
 ﻿using System;
+using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
 
-namespace FractionTrainer // Убедитесь, что пространство имен совпадает
+namespace FractionTrainer
 {
     public partial class LearningModeWindow : Window
     {
-        private Random random = new Random();
+        // --- Поля класса ---
+        private readonly Random random = new Random();
+        private int targetNumerator;
+        private int targetDenominator;
+        private int currentUserDenominator = 1;
 
-        private int sectorsToSelect;
-        private int totalSectorsInShape; // Переименовано для ясности
-        private int baseNumeratorToDisplay;
-        private int baseDenominatorToDisplay;
-
+        // --- Конструктор ---
         public LearningModeWindow()
         {
-            InitializeComponent(); // Убедитесь, что эта строка не вызывает ошибок
+            InitializeComponent();
             GenerateNewLevel();
         }
 
-        // В классе LearningModeWindow
-        // В файле LearningModeWindow.xaml.cs
+        // --- Обработчики событий ---
 
-        private void GenerateNewLevel()
-        {
-            System.Diagnostics.Debug.WriteLine("--- GenerateNewLevel: Начало ---");
-
-            ShapeType selectedShape;
-            int shapeChoice = random.Next(0, 4); // 0: Circle, 1: Triangle, 2: Octagon, 3: Diamond
-            System.Diagnostics.Debug.WriteLine($"[GenerateNewLevel] shapeChoice (0-C, 1-T, 2-O, 3-D): {shapeChoice}");
-
-            switch (shapeChoice)
-            {
-                case 0: selectedShape = ShapeType.Circle; break;
-                case 1: selectedShape = ShapeType.Triangle; break;
-                case 2: selectedShape = ShapeType.Octagon; break;
-                default: // case 3
-                    selectedShape = ShapeType.Diamond;
-                    break;
-            }
-            System.Diagnostics.Debug.WriteLine($"[GenerateNewLevel] selectedShape: {selectedShape}");
-
-            if (FractionDisplay == null)
-            {
-                System.Diagnostics.Debug.WriteLine("[GenerateNewLevel] FractionDisplay is NULL. Выход.");
-                return;
-            }
-            FractionDisplay.CurrentShapeType = selectedShape;
-
-            if (selectedShape == ShapeType.Triangle)
-            {
-                System.Diagnostics.Debug.WriteLine("[GenerateNewLevel] Логика для Треугольника");
-                totalSectorsInShape = 3;
-                sectorsToSelect = random.Next(1, 3); // 1 или 2
-                System.Diagnostics.Debug.WriteLine($"[GenerateNewLevel] Triangle: sectorsToSelect = {sectorsToSelect}");
-
-                int multiplier = random.Next(2, 5); // Множитель от 2 до 4
-                System.Diagnostics.Debug.WriteLine($"[GenerateNewLevel] Triangle: multiplier = {multiplier}");
-
-                baseNumeratorToDisplay = sectorsToSelect * multiplier;
-                baseDenominatorToDisplay = totalSectorsInShape * multiplier;
-            }
-            else if (selectedShape == ShapeType.Octagon)
-            {
-                System.Diagnostics.Debug.WriteLine("[GenerateNewLevel] Логика для Восьмиугольника");
-                totalSectorsInShape = 8;
-                int trueNumeratorForOctagon = random.Next(1, 8); // от 1 до 7
-                System.Diagnostics.Debug.WriteLine($"[GenerateNewLevel] Octagon: trueNumeratorForOctagon = {trueNumeratorForOctagon}");
-                sectorsToSelect = trueNumeratorForOctagon;
-
-                int commonDivisor = GCD(trueNumeratorForOctagon, totalSectorsInShape);
-                System.Diagnostics.Debug.WriteLine($"[GenerateNewLevel] Octagon: commonDivisor = {commonDivisor}");
-
-                baseNumeratorToDisplay = trueNumeratorForOctagon / commonDivisor;
-                baseDenominatorToDisplay = totalSectorsInShape / commonDivisor;
-            }
-            else if (selectedShape == ShapeType.Diamond)
-            {
-                System.Diagnostics.Debug.WriteLine("[GenerateNewLevel] Логика для Алмаза");
-                totalSectorsInShape = 4;
-                baseNumeratorToDisplay = random.Next(1, 4); // 1, 2, или 3
-                baseDenominatorToDisplay = 4;
-                sectorsToSelect = baseNumeratorToDisplay;
-            }
-            else // ShapeType.Circle
-            {
-                System.Diagnostics.Debug.WriteLine("[GenerateNewLevel] Логика для Круга");
-                int baseDen = random.Next(2, 6);
-                System.Diagnostics.Debug.WriteLine($"[GenerateNewLevel] Circle: baseDen = {baseDen}");
-                int baseNum = random.Next(1, baseDen);
-                System.Diagnostics.Debug.WriteLine($"[GenerateNewLevel] Circle: baseNum = {baseNum}");
-
-                baseNumeratorToDisplay = baseNum;
-                baseDenominatorToDisplay = baseDen;
-
-                int multiplier = random.Next(1, 3);
-                System.Diagnostics.Debug.WriteLine($"[GenerateNewLevel] Circle: multiplier = {multiplier}");
-
-                totalSectorsInShape = baseDen * multiplier;
-                sectorsToSelect = baseNum * multiplier;
-            }
-
-            System.Diagnostics.Debug.WriteLine($"[GenerateNewLevel] Итоговые значения перед отображением: baseNumeratorToDisplay = {baseNumeratorToDisplay}, baseDenominatorToDisplay = {baseDenominatorToDisplay}");
-            System.Diagnostics.Debug.WriteLine($"[GenerateNewLevel] Итоговые значения для контрола: sectorsToSelect = {sectorsToSelect}, totalSectorsInShape = {totalSectorsInShape}");
-
-
-            if (NumeratorTextBlock != null && DenominatorTextBlock != null)
-            {
-                NumeratorTextBlock.Text = baseNumeratorToDisplay.ToString();
-                DenominatorTextBlock.Text = baseDenominatorToDisplay.ToString();
-            }
-            else
-            {
-                System.Diagnostics.Debug.WriteLine("[GenerateNewLevel] ОШИБКА: NumeratorTextBlock или DenominatorTextBlock не найдены!");
-            }
-
-            if (FractionDisplay != null)
-            {
-                FractionDisplay.TargetNumerator = sectorsToSelect;
-                FractionDisplay.Denominator = totalSectorsInShape;
-                FractionDisplay.ResetUserSelectionAndDraw();
-            }
-            System.Diagnostics.Debug.WriteLine("--- GenerateNewLevel: Конец ---");
-        }
-
+        /// <summary>
+        /// Обрабатывает клик по основной кнопке, которая может быть в режиме "Проверить", "Продолжить" или "Заново".
+        /// </summary>
         private void CheckButton_Click(object sender, RoutedEventArgs e)
         {
-            System.Diagnostics.Debug.WriteLine($"[CheckButton_Click] Перед вызовом FractionDisplay.UserSelectedSectorsCount.");
-            int userSelection = -1;
+            string buttonContent = CheckButton.Content.ToString();
 
-            if (FractionDisplay == null)
+            // --- Логика состояний кнопки ---
+            if (buttonContent == "Продолжить")
             {
-                System.Diagnostics.Debug.WriteLine("[CheckButton_Click] FractionDisplay IS NULL!");
-                CustomMessageBoxWindow.Show("Ошибка: компонент отображения дроби не инициализирован.", "Критическая ошибка", this);
+                GenerateNewLevel(); // Переходим к следующему уровню
+                return;
+            }
+            else if (buttonContent == "Заново")
+            {
+                // Сбрасываем текущую попытку, не меняя задание
+                FractionDisplay.ResetUserSelectionAndDraw(); // Очищаем выбранные сектора
+                ResetButtonAndFeedbackState(); // Возвращаем кнопку и панель в исходное состояние
                 return;
             }
 
-            try
+            // --- Логика для состояния "Проверить" ---
+            if (FractionDisplay == null) return;
+            int userSelectedNumerator = FractionDisplay.UserSelectedSectorsCount;
+            int userSelectedDenominator = FractionDisplay.Denominator;
+
+            if (userSelectedDenominator <= 1 && userSelectedNumerator == 0)
             {
-                userSelection = FractionDisplay.UserSelectedSectorsCount;
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"[CheckButton_Click] ИСКЛЮЧЕНИЕ при вызове UserSelectedSectorsCount: {ex.ToString()}");
-                CustomMessageBoxWindow.Show($"Произошла ошибка при получении выбора: {ex.Message}", "Ошибка", this);
+                CustomMessageBoxWindow.Show("Сначала соберите дробь, используя кнопки '+/- доля' и кликая по секторам.", "Подсказка", this);
                 return;
             }
-            System.Diagnostics.Debug.WriteLine($"[CheckButton_Click] СРАЗУ ПОСЛЕ вызова. userSelection = {userSelection}");
 
-            if (userSelection == sectorsToSelect)
+            double targetValue = (double)targetNumerator / targetDenominator;
+            double userValue = (userSelectedDenominator == 0) ? 0 : (double)userSelectedNumerator / userSelectedDenominator;
+
+            if (Math.Abs(targetValue - userValue) < 0.0001)
             {
-                // Используем наше кастомное окно
-                CustomMessageBoxWindow.Show("Правильно! Следующий уровень.", "Результат", this);
-                GenerateNewLevel();
+                // Правильный ответ!
+                ShowSuccessFeedback();
             }
             else
             {
-                // Используем наше кастомное окно
-                CustomMessageBoxWindow.Show($"Неправильно. Вы выбрали {userSelection} из {totalSectorsInShape}. Попробуйте еще раз! (Нужно было собрать дробь {baseNumeratorToDisplay}/{baseDenominatorToDisplay})", "Результат", this);
+                // Неправильный ответ!
+                ShowErrorFeedback();
             }
         }
 
+        /// <summary>
+        /// Обрабатывает клик по кнопке "- доля", уменьшая количество секторов.
+        /// </summary>
+        private void DecreaseDenominatorButton_Click(object sender, RoutedEventArgs e)
+        {
+            ResetButtonAndFeedbackState(); // Сбрасываем обратную связь, если пользователь меняет знаменатель
+            currentUserDenominator--;
+            UpdateShapeDenominator();
+        }
+
+        /// <summary>
+        /// Обрабатывает клик по кнопке "+ доля", увеличивая количество секторов.
+        /// </summary>
+        private void IncreaseDenominatorButton_Click(object sender, RoutedEventArgs e)
+        {
+            ResetButtonAndFeedbackState(); // Сбрасываем обратную связь, если пользователь меняет знаменатель
+            currentUserDenominator++;
+            UpdateShapeDenominator();
+        }
+
+        /// <summary>
+        /// Обрабатывает клик по кнопке "Назад" (стрелочке).
+        /// </summary>
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
             var ownerWindow = this.Owner ?? Application.Current.MainWindow;
-            if (ownerWindow != null && ownerWindow != this) // Не показываем сами себя, если мы и есть MainWindow
-            {
-                if (!ownerWindow.IsVisible) ownerWindow.Show();
-                ownerWindow.Focus(); // Передаем фокус
-            }
+            if (ownerWindow != null && ownerWindow != this) { if (!ownerWindow.IsVisible) ownerWindow.Show(); ownerWindow.Focus(); }
             this.Close();
         }
-        private static int GCD(int a, int b)
+
+        // --- Вспомогательные методы ---
+
+        /// <summary>
+        /// Генерирует новый уровень: новую целевую дробь и сбрасывает фигуру.
+        /// </summary>
+        private void GenerateNewLevel()
         {
-            while (b != 0)
+            targetDenominator = random.Next(2, 9);
+            targetNumerator = random.Next(1, targetDenominator);
+            NumeratorTextBlock.Text = targetNumerator.ToString();
+            DenominatorTextBlock.Text = targetDenominator.ToString();
+
+            currentUserDenominator = 1;
+
+            if (FractionDisplay != null)
             {
-                int temp = b;
-                b = a % b;
-                a = temp;
+                FractionDisplay.CurrentShapeType = ShapeType.Circle;
+                UpdateShapeDenominator();
             }
-            return Math.Abs(a); // Возвращаем абсолютное значение на случай отрицательных чисел, хотя здесь они не ожидаются
+
+            ResetButtonAndFeedbackState();
+        }
+
+        /// <summary>
+        /// Обновляет знаменатель у фигуры и инициирует ее перерисовку.
+        /// </summary>
+        private void UpdateShapeDenominator()
+        {
+            if (currentUserDenominator < 1) currentUserDenominator = 1;
+            if (currentUserDenominator > 16) currentUserDenominator = 16;
+            if (FractionDisplay != null) { FractionDisplay.Denominator = currentUserDenominator; }
+        }
+
+        /// <summary>
+        /// Показывает зеленую панель успеха и переключает кнопку в режим "Продолжить".
+        /// </summary>
+        private void ShowSuccessFeedback()
+        {
+            FeedbackBackground.Background = new SolidColorBrush(Color.FromRgb(224, 251, 226)); // Светло-зеленый
+            FeedbackText.Text = "✓"; // Только галочка
+            FeedbackText.Foreground = new SolidColorBrush(Color.FromRgb(34, 139, 34)); // Зеленый
+            FeedbackText.Visibility = Visibility.Visible;
+
+            CheckButton.Content = "Продолжить";
+            CheckButton.Background = new SolidColorBrush(Color.FromRgb(40, 167, 69)); // Насыщенный зеленый
+        }
+
+        /// <summary>
+        /// Показывает красную панель ошибки и переключает кнопку в режим "Заново".
+        /// </summary>
+        private void ShowErrorFeedback()
+        {
+            FeedbackBackground.Background = new SolidColorBrush(Color.FromRgb(255, 235, 238)); // Светло-красный
+            FeedbackText.Text = "✗"; // Только крестик
+            FeedbackText.Foreground = new SolidColorBrush(Color.FromRgb(220, 53, 69)); // Красный
+            FeedbackText.Visibility = Visibility.Visible;
+
+            CheckButton.Content = "Заново";
+            CheckButton.Background = new SolidColorBrush(Color.FromRgb(220, 53, 69)); // Красный цвет
+        }
+
+        /// <summary>
+        /// Сбрасывает панель и кнопку в исходное состояние "Проверить".
+        /// </summary>
+        private void ResetButtonAndFeedbackState()
+        {
+            FeedbackBackground.Background = Brushes.Transparent;
+            FeedbackText.Visibility = Visibility.Collapsed;
+            CheckButton.Content = "Проверить";
+
+            // Пытаемся вернуть исходный синий цвет из стиля
+            if (Application.Current.TryFindResource("ModernButton") is Style modernButtonStyle)
+            {
+                var backgroundSetter = modernButtonStyle.Setters.OfType<Setter>().FirstOrDefault(s => s.Property == Button.BackgroundProperty);
+                if (backgroundSetter != null)
+                {
+                    CheckButton.Background = (Brush)backgroundSetter.Value;
+                    return;
+                }
+            }
+            CheckButton.Background = new SolidColorBrush(Color.FromRgb(0, 122, 255)); // Запасной синий
         }
     }
 }

@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Controls.Primitives; // Для ToggleButton
+using System.Windows.Media;
 
 namespace FractionTrainer
 {
@@ -229,6 +231,7 @@ namespace FractionTrainer
                 }
             }
             System.Diagnostics.Debug.WriteLine("--- GenerateMultipleChoiceLevel: Конец ---");
+            ResetButtonAndFeedbackState();
         }
 
         // Вспомогательный метод для создания ПРАВИЛЬНОГО варианта
@@ -374,59 +377,101 @@ namespace FractionTrainer
         // Также обновите CheckButton_Click, чтобы он использовал FractionOption из Tag
         private void CheckButton_Click(object sender, RoutedEventArgs e)
         {
+            string buttonContent = CheckButton.Content.ToString();
+
+            if (buttonContent == "Продолжить")
+            {
+                GenerateMultipleChoiceLevel();
+                return;
+            }
+            else if (buttonContent == "Заново")
+            {
+                // Сбрасываем выбор пользователя (ToggleButtons), но не генерируем новый уровень
+                foreach (var btn in optionToggleButtons)
+                {
+                    btn.IsChecked = false;
+                }
+                ResetButtonAndFeedbackState(); // Возвращаем кнопку и панель в исходное состояние
+                return;
+            }
+
+            // --- Логика для состояния "Проверить" ---
             int totalCorrectOptionsInLevel = currentOptions.Count(opt => opt.IsCorrect);
-            int userMadeCorrectSelections = 0; // Сколько ПРАВИЛЬНЫХ вариантов выбрал пользователь
-            int userMadeIncorrectSelections = 0; // Сколько НЕПРАВИЛЬНЫХ вариантов выбрал пользователь
+            int userMadeCorrectSelections = 0;
+            int userMadeIncorrectSelections = 0;
 
             for (int i = 0; i < optionToggleButtons.Count; i++)
             {
                 if (i < currentOptions.Count && optionToggleButtons[i].Visibility == Visibility.Visible)
                 {
                     bool isSelected = optionToggleButtons[i].IsChecked == true;
-                    FractionOption optionData = optionToggleButtons[i].Tag as FractionOption;
-
-                    if (optionData == null) continue; // На всякий случай
-
-                    if (isSelected)
+                    // Получаем данные опции из Tag, который мы установили при генерации
+                    if (optionToggleButtons[i].Tag is FractionOption optionData)
                     {
-                        if (optionData.IsCorrect)
+                        if (isSelected)
                         {
-                            userMadeCorrectSelections++;
-                        }
-                        else
-                        {
-                            userMadeIncorrectSelections++;
+                            if (optionData.IsCorrect) userMadeCorrectSelections++;
+                            else userMadeIncorrectSelections++;
                         }
                     }
                 }
             }
 
-            string message;
-            // Пользователь прав, если он выбрал ВСЕ правильные варианты И НИ ОДНОГО неправильного
             if (userMadeCorrectSelections == totalCorrectOptionsInLevel && userMadeIncorrectSelections == 0 && totalCorrectOptionsInLevel > 0)
             {
-                message = "Отлично! Все правильно!";
-                CustomMessageBoxWindow.Show(message, "Результат", this);
-                GenerateMultipleChoiceLevel();
+                ShowSuccessFeedback();
             }
             else
             {
-                message = $"Попробуйте еще раз.\nВыбрано правильных: {userMadeCorrectSelections} из {totalCorrectOptionsInLevel}.\nВыбрано неправильных: {userMadeIncorrectSelections}.";
-                if (totalCorrectOptionsInLevel == 0) message = "На этом уровне не было правильных вариантов (ошибка генерации), попробуйте следующий."; // Маловероятно
-                CustomMessageBoxWindow.Show(message, "Результат", this);
+                ShowErrorFeedback();
             }
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            // Логика аналогична LearningModeWindow
             var ownerWindow = this.Owner ?? Application.Current.MainWindow;
-            if (ownerWindow != null && ownerWindow != this)
-            {
-                if (!ownerWindow.IsVisible) ownerWindow.Show();
-                ownerWindow.Focus();
-            }
+            if (ownerWindow != null && ownerWindow != this) { if (!ownerWindow.IsVisible) ownerWindow.Show(); ownerWindow.Focus(); }
             this.Close();
+        }
+
+        // --- Вспомогательные методы для обратной связи и генерации ---
+
+        private void ShowSuccessFeedback()
+        {
+            FeedbackBackground.Background = new SolidColorBrush(Color.FromRgb(224, 251, 226));
+            FeedbackText.Text = "✓";
+            FeedbackText.Foreground = new SolidColorBrush(Color.FromRgb(34, 139, 34));
+            FeedbackText.Visibility = Visibility.Visible;
+            CheckButton.Content = "Продолжить";
+            CheckButton.Background = new SolidColorBrush(Color.FromRgb(40, 167, 69));
+        }
+
+        private void ShowErrorFeedback()
+        {
+            FeedbackBackground.Background = new SolidColorBrush(Color.FromRgb(255, 235, 238));
+            FeedbackText.Text = "✗";
+            FeedbackText.Foreground = new SolidColorBrush(Color.FromRgb(220, 53, 69));
+            FeedbackText.Visibility = Visibility.Visible;
+            CheckButton.Content = "Заново";
+            CheckButton.Background = new SolidColorBrush(Color.FromRgb(220, 53, 69));
+        }
+
+        private void ResetButtonAndFeedbackState()
+        {
+            FeedbackBackground.Background = Brushes.Transparent;
+            FeedbackText.Visibility = Visibility.Collapsed;
+            CheckButton.Content = "Проверить";
+
+            if (Application.Current.TryFindResource("ModernButton") is Style modernButtonStyle)
+            {
+                var backgroundSetter = modernButtonStyle.Setters.OfType<Setter>().FirstOrDefault(s => s.Property == Button.BackgroundProperty);
+                if (backgroundSetter != null)
+                {
+                    CheckButton.Background = (Brush)backgroundSetter.Value;
+                    return;
+                }
+            }
+            CheckButton.Background = new SolidColorBrush(Color.FromRgb(0, 122, 255));
         }
     }
 }

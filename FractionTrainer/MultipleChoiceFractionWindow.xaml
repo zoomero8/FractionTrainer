@@ -12,6 +12,7 @@
         WindowStyle="None" BorderThickness="1" BorderBrush="#FFCCCCCC">
 
     <Window.Resources>
+        <!-- Стиль для карточки варианта ответа (остается без изменений) -->
         <Style x:Key="OptionCardToggleStyle" TargetType="ToggleButton">
             <Setter Property="Background" Value="White"/>
             <Setter Property="BorderBrush" Value="#FFDDDDDD"/>
@@ -48,50 +49,34 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <!-- Заголовок и кнопка Назад -->
             <RowDefinition Height="Auto"/>
+            <!-- Целевая дробь -->
             <RowDefinition Height="*"/>
+            <!-- Варианты -->
             <RowDefinition Height="Auto"/>
+            <!-- Кнопка Проверить и панель -->
         </Grid.RowDefinitions>
 
+        <!-- Строка 0: Заголовок и кнопка "Назад" (без изменений) -->
         <Grid Grid.Row="0" Margin="5,15,5,15">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="59"/>
+                <ColumnDefinition Width="50"/>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="59"/>
+                <ColumnDefinition Width="50"/>
             </Grid.ColumnDefinitions>
-
-            <Button x:Name="BackButton" Grid.Column="0" 
-                    Style="{StaticResource ArrowBackButton}" 
-                    Click="BackButton_Click"
-                    HorizontalAlignment="Left" 
-                    VerticalAlignment="Center"
-                    Margin="5,0,0,0"/>
-            <TextBlock Grid.Column="1" Text="Выберите все подходящие варианты" 
-                       Style="{StaticResource ModernTitleText}" FontSize="18" Margin="0" HorizontalAlignment="Center" 
-                       VerticalAlignment="Center"
-                       TextWrapping="Wrap" 
-                       TextAlignment="Center"/>
+            <Button x:Name="BackButton" Grid.Column="0" Style="{StaticResource ArrowBackButton}" Click="BackButton_Click" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,0,0,0"/>
+            <TextBlock Grid.Column="1" Text="Выберите все подходящие варианты" Style="{StaticResource ModernTitleText}" FontSize="18" Margin="0" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center"/>
         </Grid>
 
-        <StackPanel Grid.Row="1" 
-                    HorizontalAlignment="Center" 
-                    VerticalAlignment="Center" 
-                    Margin="0,0,0,10">
-            <TextBlock x:Name="TargetNumeratorTextBlock" Text="1" 
-                       Style="{StaticResource FractionDisplayText}"
-                       Padding="0" 
-                       LineHeight="58" HorizontalAlignment="Center" 
-                       Margin="0,0,0,-8"/>
-            <Rectangle Height="4" Width="60" Fill="{Binding Foreground, ElementName=TargetNumeratorTextBlock}" 
-                       Margin="0" HorizontalAlignment="Center"/>
-
-            <TextBlock x:Name="TargetDenominatorTextBlock" Text="4" 
-                       Style="{StaticResource FractionDisplayText}"
-                       Padding="0" 
-                       LineHeight="58" HorizontalAlignment="Center" 
-                       Margin="0,-8,0,0"/>
+        <!-- Строка 1: Отображение целевой дроби (без изменений) -->
+        <StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,10">
+            <TextBlock x:Name="TargetNumeratorTextBlock" Text="1" Style="{StaticResource FractionDisplayText}" Padding="0" Margin="0,0,0,-12"/>
+            <Rectangle Height="3" Width="50" Fill="{Binding Foreground, ElementName=TargetNumeratorTextBlock}" Margin="0,6,0,0" HorizontalAlignment="Center"/>
+            <TextBlock x:Name="TargetDenominatorTextBlock" Text="4" Style="{StaticResource FractionDisplayText}" Padding="0" Margin="0,-12,0,0"/>
         </StackPanel>
 
+        <!-- Строка 2: Панель с вариантами ответов (без изменений) -->
         <UniformGrid Grid.Row="2" Columns="2" Rows="2" Margin="10">
             <ToggleButton x:Name="OptionButton1" Style="{StaticResource OptionCardToggleStyle}">
                 <local:FractionShapeVisualizer x:Name="OptionShape1" IsInteractionEnabled="False"/>
@@ -107,8 +92,43 @@
             </ToggleButton>
         </UniformGrid>
 
-        <Button x:Name="CheckButton" Grid.Row="3" Content="Проверить" 
-                Width="200" Height="50" Style="{StaticResource ModernButton}" 
-                Margin="10,15,10,20" Click="CheckButton_Click"/>
+        <!-- ИЗМЕНЕННАЯ СТРОКА 3: Единый контейнер для кнопки и обратной связи -->
+        <Grid Grid.Row="3" x:Name="BottomBarContainer" Margin="10,15,10,20">
+            <!-- Этот Border будет служить фоном для всей панели -->
+            <Border x:Name="FeedbackBackground"
+                    Background="Transparent"
+                    CornerRadius="5"
+                    Height="50"/>
+
+            <!-- Внутренняя сетка для размещения текста и кнопки -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <!-- Левая часть для текста -->
+                    <ColumnDefinition Width="Auto"/>
+                    <!-- Центральная часть для кнопки -->
+                    <ColumnDefinition Width="*"/>
+                    <!-- Правая часть (пустая) -->
+                </Grid.ColumnDefinitions>
+
+                <!-- Текст обратной связи, изначально скрыт -->
+                <TextBlock x:Name="FeedbackText" Grid.Column="0"
+                           Text="✓"
+                           Foreground="#006400"
+                           FontSize="20"
+                           FontWeight="SemiBold"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Center"
+                           Margin="20,0,0,0"
+                           Visibility="Collapsed"/>
+
+                <!-- Кнопка Проверить/Продолжить/Заново -->
+                <Button x:Name="CheckButton" Grid.Column="1"
+                        Content="Проверить" 
+                        Width="200" Height="50" 
+                        Style="{StaticResource ModernButton}" 
+                        Click="CheckButton_Click"/>
+            </Grid>
+        </Grid>
     </Grid>
 </Window>
