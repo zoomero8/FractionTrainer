@@ -38,6 +38,20 @@ namespace FractionTrainer
             this.Hide(); // Скрываем MainWindow
         }
 
+        private void FindPairsModeButton_Click(object sender, RoutedEventArgs e)
+        {
+            FindPairsWindow findPairsWindow = new FindPairsWindow();
+            findPairsWindow.Owner = this;
+
+            findPairsWindow.Closed += (s, args) =>
+            {
+                this.Show(); // Показываем MainWindow, когда окно "Найдите пары" закрывается
+            };
+
+            findPairsWindow.Show();
+            this.Hide(); // Скрываем MainWindow
+        }
+
         private void TestModeButton_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("Режим проверки знаний еще не реализован.", "Информация");

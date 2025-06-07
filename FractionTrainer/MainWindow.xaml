@@ -75,6 +75,11 @@
                     Style="{StaticResource ModernButton}" 
                     Click="MultipleChoiceModeButton_Click"/>
 
+            <Button x:Name="FindPairsModeButton" Content="Найдите пары" 
+                    Width="220" Height="50" 
+                    Style="{StaticResource ModernButton}" 
+                    Click="FindPairsModeButton_Click"/>
+
             <Button x:Name="TestModeButton" Content="Проверка знаний" 
                     Width="220" Height="50" 
                     Style="{StaticResource ModernButton}" 
