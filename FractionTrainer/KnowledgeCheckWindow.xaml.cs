@@ -55,7 +55,6 @@ namespace FractionTrainer
                     currentLevelControl = new FindPairsLevel();
                     break;
                 default:
-                    // Запасной вариант на случай ошибки - создаем самый простой уровень
                     currentLevelControl = new AssembleFractionLevel();
                     break;
             }
@@ -70,9 +69,6 @@ namespace FractionTrainer
             LevelContentPresenter.Content = currentLevelControl;
         }
 
-        /// <summary>
-        /// Вызывается, когда дочерний UserControl сообщает о завершении уровня.
-        /// </summary>
         private void OnLevelCompleted(object sender, bool isCorrect)
         {
             // Отписываемся от события, чтобы избежать повторных вызовов
@@ -83,14 +79,12 @@ namespace FractionTrainer
 
             if (isCorrect)
             {
-                // ИСПРАВЛЕНО: Используем правильное имя метода
                 _gameStateManager.CorrectAnswer();
                 // Загружаем следующий уровень после правильного ответа
                 LoadCurrentLevel();
             }
             else
             {
-                // ИСПРАВЛЕНО: Используем правильное имя метода
                 _gameStateManager.IncorrectAnswer();
 
                 // Обновляем жизни
@@ -107,15 +101,10 @@ namespace FractionTrainer
                 }
             }
         }
-
-        /// <summary>
-        /// Обновляет информацию на верхней панели (уровень и жизни).
-        /// </summary>
         private void UpdateTopPanel()
         {
             LevelProgressTextBlock.Text = $"Уровень {_gameStateManager.CurrentLevel}/{15}";
 
-            // Получаем кисть для сердечек из ресурсов приложения
             var heartBrush = (Brush)Application.Current.TryFindResource("HeartBrush");
             if (heartBrush == null)
             {

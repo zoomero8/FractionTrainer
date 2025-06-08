@@ -6,17 +6,12 @@ namespace FractionTrainer
     {
         public string MessageTitle { get; set; } // Используем обычные свойства для простоты
         public string MessageText { get; set; }
-
-        // Конструктор для простоты можно оставить пустым или принимать параметры сразу
         public CustomMessageBoxWindow(string message, string title = "Сообщение")
         {
             InitializeComponent();
             this.MessageTitle = title;
             this.MessageText = message;
         }
-
-        // Можно было бы использовать DependencyProperties для Title и Message,
-        // но для простого диалога обычных свойств, установленных перед ShowDialog(), достаточно.
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -31,7 +26,6 @@ namespace FractionTrainer
             this.Close();
         }
 
-        // Статический метод для удобного вызова, имитирующий MessageBox.Show
         public static void Show(string message, string title = "Сообщение", Window owner = null)
         {
             CustomMessageBoxWindow customBox = new CustomMessageBoxWindow(message, title);

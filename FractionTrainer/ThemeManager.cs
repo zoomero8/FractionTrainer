@@ -9,7 +9,6 @@ namespace FractionTrainer
 
     public static class ThemeManager
     {
-        // ВОТ НЕДОСТАЮЩЕЕ СВОЙСТВО
         public static Theme CurrentTheme { get; private set; } = Theme.Light;
 
         public static void ApplyTheme(Theme theme)

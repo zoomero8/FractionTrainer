@@ -18,8 +18,6 @@ namespace FractionTrainer
         private readonly List<ToggleButton> optionToggleButtons;
         private readonly List<FractionShapeVisualizer> optionShapes;
 
-        // Поля с жестко заданными цветами УДАЛЕНЫ
-
         public FindPairsLevel()
         {
             InitializeComponent();
@@ -37,7 +35,6 @@ namespace FractionTrainer
             var availableShapes = Enum.GetValues(typeof(ShapeType)).Cast<ShapeType>().ToList();
             var usedFractionValues = new HashSet<double>();
 
-            // ... (весь ваш код генерации уровня остается без изменений) ...
             #region Level Generation Logic
             int pairsToGenerate = random.Next(1, 4);
 
@@ -130,8 +127,6 @@ namespace FractionTrainer
 
         private void CheckButton_Click(object sender, RoutedEventArgs e)
         {
-            // Этот код правильный и не требует изменений
-            // (он использует ShowSuccess/ErrorFeedback, которые мы сейчас исправим)
             #region CheckButton Logic
             if (CheckButton.Content.ToString() == "Заново")
             {
@@ -220,7 +215,6 @@ namespace FractionTrainer
         }
 
         #region Helper Methods (Generation & Feedback)
-        // Методы генерации дробей остаются без изменений
         private FractionOption CreateDifferentVisualOption(int baseNum, int baseDen, List<ShapeType> availableShapes, FractionOption firstOption, List<FractionOption> existingOptions)
         {
             int attempts = 0;
@@ -265,7 +259,6 @@ namespace FractionTrainer
             return null;
         }
 
-        // --- ИСПРАВЛЕННЫЕ МЕТОДЫ ОБРАТНОЙ СВЯЗИ ---
         private void ResetButtonAndFeedbackState()
         {
             FeedbackText.Visibility = Visibility.Collapsed;

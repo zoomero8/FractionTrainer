@@ -8,9 +8,6 @@ using System.Windows.Shapes;
 
 namespace FractionTrainer
 {
-    /// <summary>
-    /// Перечисление для типов фигур, которые может отображать визуализатор.
-    /// </summary>
     public enum ShapeType
     {
         Circle,
@@ -19,11 +16,6 @@ namespace FractionTrainer
         Diamond
     }
 
-    /// <summary>
-    /// Пользовательский элемент управления для визуального представления дробей в виде различных фигур,
-    /// разделенных на сектора. Поддерживает два режима: интерактивный (пользователь выбирает сектора)
-    /// и режим отображения (показывает предустановленную дробь).
-    /// </summary>
     public partial class FractionShapeVisualizer : UserControl
     {
         // --- Поля и Свойства ---
@@ -234,7 +226,6 @@ namespace FractionTrainer
 
         private void Sector_Clicked(int sectorIndex)
         {
-            // Эта строка - ключ к диагностике. Если она появляется, событие работает.
             System.Diagnostics.Debug.WriteLine($"КЛИК по сектору {sectorIndex}! Интерактивность: {IsInteractionEnabled}");
 
             if (!IsInteractionEnabled) return;

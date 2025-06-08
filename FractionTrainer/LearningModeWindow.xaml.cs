@@ -20,12 +20,6 @@ namespace FractionTrainer
             InitializeComponent();
             GenerateNewLevel();
         }
-
-        // --- Обработчики событий ---
-
-        /// <summary>
-        /// Обрабатывает клик по основной кнопке, которая может быть в режиме "Проверить", "Продолжить" или "Заново".
-        /// </summary>
         private void CheckButton_Click(object sender, RoutedEventArgs e)
         {
             string buttonContent = CheckButton.Content.ToString();
@@ -38,9 +32,8 @@ namespace FractionTrainer
             }
             else if (buttonContent == "Заново")
             {
-                // Сбрасываем текущую попытку, не меняя задание
-                FractionDisplay.ResetUserSelectionAndDraw(); // Очищаем выбранные сектора
-                ResetButtonAndFeedbackState(); // Возвращаем кнопку и панель в исходное состояние
+                FractionDisplay.ResetUserSelectionAndDraw();
+                ResetButtonAndFeedbackState();
                 return;
             }
 
@@ -70,9 +63,6 @@ namespace FractionTrainer
             }
         }
 
-        /// <summary>
-        /// Обрабатывает клик по кнопке "- доля", уменьшая количество секторов.
-        /// </summary>
         private void DecreaseDenominatorButton_Click(object sender, RoutedEventArgs e)
         {
             ResetButtonAndFeedbackState(); // Сбрасываем обратную связь, если пользователь меняет знаменатель
@@ -80,9 +70,6 @@ namespace FractionTrainer
             UpdateShapeDenominator();
         }
 
-        /// <summary>
-        /// Обрабатывает клик по кнопке "+ доля", увеличивая количество секторов.
-        /// </summary>
         private void IncreaseDenominatorButton_Click(object sender, RoutedEventArgs e)
         {
             ResetButtonAndFeedbackState(); // Сбрасываем обратную связь, если пользователь меняет знаменатель
@@ -90,9 +77,6 @@ namespace FractionTrainer
             UpdateShapeDenominator();
         }
 
-        /// <summary>
-        /// Обрабатывает клик по кнопке "Назад" (стрелочке).
-        /// </summary>
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
             var ownerWindow = this.Owner ?? Application.Current.MainWindow;
@@ -102,9 +86,6 @@ namespace FractionTrainer
 
         // --- Вспомогательные методы ---
 
-        /// <summary>
-        /// Генерирует новый уровень: новую целевую дробь и сбрасывает фигуру.
-        /// </summary>
         private void GenerateNewLevel()
         {
             targetDenominator = random.Next(2, 9);
@@ -123,9 +104,6 @@ namespace FractionTrainer
             ResetButtonAndFeedbackState();
         }
 
-        /// <summary>
-        /// Обновляет знаменатель у фигуры и инициирует ее перерисовку.
-        /// </summary>
         private void UpdateShapeDenominator()
         {
             if (currentUserDenominator < 1) currentUserDenominator = 1;
@@ -133,9 +111,6 @@ namespace FractionTrainer
             if (FractionDisplay != null) { FractionDisplay.Denominator = currentUserDenominator; }
         }
 
-        /// <summary>
-        /// Показывает зеленую панель успеха и переключает кнопку в режим "Продолжить".
-        /// </summary>
         private void ShowSuccessFeedback()
         {
             FeedbackText.Text = "✓"; // Только галочка
@@ -146,9 +121,6 @@ namespace FractionTrainer
             CheckButton.Background = new SolidColorBrush(Color.FromRgb(40, 167, 69)); // Насыщенный зеленый
         }
 
-        /// <summary>
-        /// Показывает красную панель ошибки и переключает кнопку в режим "Заново".
-        /// </summary>
         private void ShowErrorFeedback()
         {
             FeedbackText.Text = "✗"; // Только крестик
@@ -159,22 +131,14 @@ namespace FractionTrainer
             CheckButton.Background = new SolidColorBrush(Color.FromRgb(220, 53, 69)); // Красный цвет
         }
 
-        /// <summary>
-        /// Сбрасывает панель и кнопку в исходное состояние "Проверить".
-        /// </summary>
         private void ResetButtonAndFeedbackState()
         {
             FeedbackText.Visibility = Visibility.Collapsed;
             CheckButton.Content = "Проверить";
 
-            // --- ИЗМЕНЕНИЯ ЗДЕСЬ ---
-            // Удаляем старую логику, которая вызывала ошибку.
-            // Вместо нее используем SetResourceReference для установки стиля из темы.
-            // Это C#-эквивалент записи: Background="{DynamicResource ButtonAccentBrush}"
             CheckButton.SetResourceReference(Button.BackgroundProperty, "ButtonAccentBrush");
             CheckButton.SetResourceReference(Button.ForegroundProperty, "ButtonTextBrush");
 
-            // Остальные строки оставляем как есть
             CheckButton.IsEnabled = true;
             DecreaseDenominatorButton.IsEnabled = true;
             IncreaseDenominatorButton.IsEnabled = true;

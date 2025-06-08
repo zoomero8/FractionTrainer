@@ -9,10 +9,7 @@ using System.Windows.Media;
 
 namespace FractionTrainer
 {
-    /// <summary>
-    /// UserControl для уровня типа "Выберите все подходящие варианты".
-    /// Реализует ILevelControl для взаимодействия с KnowledgeCheckWindow.
-    /// </summary>
+
     public partial class MultipleChoiceLevel : UserControl, ILevelControl
     {
         // --- Событие ---
@@ -27,7 +24,6 @@ namespace FractionTrainer
         private readonly List<ToggleButton> optionToggleButtons;
         private readonly List<FractionShapeVisualizer> optionShapes;
 
-        // --- Конструктор ---
         public MultipleChoiceLevel()
         {
             InitializeComponent();
@@ -43,7 +39,6 @@ namespace FractionTrainer
             GenerateLevel();
         }
 
-        // --- Основная логика ---
 
         public void GenerateLevel()
         {
@@ -108,7 +103,6 @@ namespace FractionTrainer
                 }
                 else
                 {
-                    // Аварийный выход: если не удалось сгенерировать сложный дистрактор, создаем простой
                     var emergencyOption = CreateEmergencyDistractor(availableShapes);
                     if (!currentOptions.Any(o => o.DisplayedNumerator == emergencyOption.DisplayedNumerator && o.DisplayedDenominator == emergencyOption.DisplayedDenominator))
                     {
@@ -278,7 +272,6 @@ namespace FractionTrainer
         }
 
 
-        // --- Методы обратной связи ---
 
         private void ShowSuccessFeedback()
         {
@@ -310,12 +303,8 @@ namespace FractionTrainer
         {
             FeedbackText.Visibility = Visibility.Collapsed;
             CheckButton.Content = "Проверить";
-            CheckButton.IsEnabled = true; // Убедимся, что кнопка активна
+            CheckButton.IsEnabled = true;
 
-            // --- ИЗМЕНЕННАЯ И ИСПРАВЛЕННАЯ ЛОГИКА ---
-            // Удаляем старый код, который вызывал ошибку.
-            // Вместо него напрямую устанавливаем ссылка на ресурсы из нашей темы.
-            // Это C#-эквивалент записи: Background="{DynamicResource ButtonAccentBrush}"
             CheckButton.SetResourceReference(Button.BackgroundProperty, "ButtonAccentBrush");
             CheckButton.SetResourceReference(Button.ForegroundProperty, "ButtonTextBrush");
         }

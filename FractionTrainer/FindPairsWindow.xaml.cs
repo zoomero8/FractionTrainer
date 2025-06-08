@@ -57,8 +57,6 @@ namespace FractionTrainer
                 if (attempts >= 20) continue;
                 usedFractionValues.Add(pairValue);
 
-                // --- ИЗМЕНЕННАЯ ЛОГИКА ГЕНЕРАЦИИ ПАРЫ ---
-
                 // Сначала генерируем первый элемент пары
                 FractionOption option1 = null;
                 int attempts1 = 0;
@@ -91,8 +89,6 @@ namespace FractionTrainer
 
                 if (option2 == null)
                 {
-                    // Если не удалось найти подходящую вторую часть, то и первая нам не нужна.
-                    // Убираем ее из usedFractionValues, чтобы не было "одиночек" от пар.
                     usedFractionValues.Remove(pairValue);
                 }
                 else
@@ -191,7 +187,6 @@ namespace FractionTrainer
             }
         }
 
-        // --- Вспомогательные методы (обратная связь, навигация, генерация) ---
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
@@ -224,10 +219,6 @@ namespace FractionTrainer
             CheckButton.Content = "Проверить";
             CheckButton.IsEnabled = true; // Убедимся, что кнопка активна
 
-            // --- ИЗМЕНЕННАЯ И ИСПРАВЛЕННАЯ ЛОГИКА ---
-            // Удаляем старый код, который вызывал ошибку.
-            // Вместо него напрямую устанавливаем ссылка на ресурсы из нашей темы.
-            // Это C#-эквивалент записи: Background="{DynamicResource ButtonAccentBrush}"
             CheckButton.SetResourceReference(Button.BackgroundProperty, "ButtonAccentBrush");
             CheckButton.SetResourceReference(Button.ForegroundProperty, "ButtonTextBrush");
         }
@@ -267,12 +258,6 @@ namespace FractionTrainer
                 attempts++;
             }
             return null;
-        }
-
-        private static int GCD(int a, int b)
-        {
-            while (b != 0) { int temp = b; b = a % b; a = temp; }
-            return Math.Abs(a);
         }
     }
 }

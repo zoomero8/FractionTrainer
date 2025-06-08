@@ -6,10 +6,6 @@ using System.Windows.Media;
 
 namespace FractionTrainer
 {
-    /// <summary>
-    /// UserControl для уровня типа "Соберите дробь".
-    /// Реализует ILevelControl для взаимодействия с KnowledgeCheckWindow.
-    /// </summary>
     public partial class AssembleFractionLevel : UserControl, ILevelControl
     {
         // --- Событие ---
@@ -37,8 +33,6 @@ namespace FractionTrainer
             // ИЗМЕНЕНИЕ 1: Теперь при нажатии на "Заново" мы сообщаем о провале
             if (buttonContent == "Заново")
             {
-                // Сообщаем родительскому окну, что попытка была неудачной.
-                // Родительское окно само снимет жизнь и перезагрузит уровень.
                 LevelCompleted?.Invoke(this, false);
                 return;
             }
@@ -67,8 +61,6 @@ namespace FractionTrainer
             }
             else
             {
-                // ИЗМЕНЕНИЕ 2: При ошибке мы просто показываем фидбек и ЖДЕМ.
-                // Мы НЕ вызываем LevelCompleted. Мы ждем, пока пользователь нажмет "Заново".
                 ShowErrorFeedback();
             }
         }
@@ -128,13 +120,9 @@ namespace FractionTrainer
 
         private void ShowErrorFeedback()
         {
-            // --- Получаем цвета из текущей темы с "запасным" вариантом ---
-
-            // Пытаемся найти кисть для фона. Если не нашли, используем светло-розовый.
             var errorBackground = (Brush)Application.Current.TryFindResource("ErrorBackgroundBrush")
                                   ?? new SolidColorBrush(Color.FromRgb(255, 235, 238));
 
-            // Пытаемся найти кисть для текста и кнопки. Если не нашли, используем красный.
             var errorForeground = (Brush)Application.Current.TryFindResource("ErrorBrush")
                                   ?? new SolidColorBrush(Color.FromRgb(220, 53, 69));
 
@@ -154,10 +142,6 @@ namespace FractionTrainer
             CheckButton.Content = "Проверить";
             CheckButton.IsEnabled = true; // Убедимся, что кнопка активна
 
-            // --- ИЗМЕНЕННАЯ И ИСПРАВЛЕННАЯ ЛОГИКА ---
-            // Удаляем старый код, который вызывал ошибку.
-            // Вместо него напрямую устанавливаем ссылка на ресурсы из нашей темы.
-            // Это C#-эквивалент записи: Background="{DynamicResource ButtonAccentBrush}"
             CheckButton.SetResourceReference(Button.BackgroundProperty, "ButtonAccentBrush");
             CheckButton.SetResourceReference(Button.ForegroundProperty, "ButtonTextBrush");
         }

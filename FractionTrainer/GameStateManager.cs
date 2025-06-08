@@ -4,19 +4,13 @@ using System.Linq;
 
 namespace FractionTrainer
 {
-    /// <summary>
-    /// Перечисление для типов уровней в режиме проверки знаний.
-    /// </summary>
     public enum TestLevelType
     {
-        AssembleFraction,    // Режим "Соберите дробь"
-        MultipleChoice,      // Режим "Выберите варианты"
-        FindPairs            // Режим "Найдите пары"
+        AssembleFraction,    
+        MultipleChoice,      
+        FindPairs            
     }
 
-    /// <summary>
-    /// Управляет состоянием игры в режиме "Проверка знаний".
-    /// </summary>
     public class GameStateManager
     {
         private readonly Random _random = new Random();
@@ -36,9 +30,6 @@ namespace FractionTrainer
             StartNewGame();
         }
 
-        /// <summary>
-        /// Начинает новую игру, сбрасывая все параметры.
-        /// </summary>
         public void StartNewGame()
         {
             CurrentLevel = 1;
@@ -46,9 +37,6 @@ namespace FractionTrainer
             GenerateLevelSequence();
         }
 
-        /// <summary>
-        /// Генерирует случайную последовательность из 15 уровней.
-        /// </summary>
         private void GenerateLevelSequence()
         {
             LevelSequence.Clear();
@@ -60,9 +48,6 @@ namespace FractionTrainer
             }
         }
 
-        /// <summary>
-        /// Возвращает тип для текущего уровня.
-        /// </summary>
         public TestLevelType GetCurrentLevelType()
         {
             if (CurrentLevel > 0 && CurrentLevel <= TotalLevels)
@@ -72,17 +57,11 @@ namespace FractionTrainer
             return TestLevelType.AssembleFraction; // Запасной вариант
         }
 
-        /// <summary>
-        /// Обрабатывает правильный ответ.
-        /// </summary>
         public void CorrectAnswer()
         {
             CurrentLevel++;
         }
 
-        /// <summary>
-        /// Обрабатывает неправильный ответ.
-        /// </summary>
         public void IncorrectAnswer()
         {
             if (Lives > 0)

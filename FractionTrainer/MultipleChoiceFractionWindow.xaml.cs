@@ -8,7 +8,6 @@ using System.Windows.Media;
 
 namespace FractionTrainer
 {
-    // Структура или класс для описания одного варианта ответа
     public class FractionOption
     {
         public ShapeType Shape { get; set; }
@@ -50,17 +49,6 @@ namespace FractionTrainer
             }
 
             GenerateMultipleChoiceLevel();
-        }
-
-        private static int GCD(int a, int b)
-        {
-            while (b != 0)
-            {
-                int temp = b;
-                b = a % b;
-                a = temp;
-            }
-            return Math.Abs(a);
         }
 
         private void GenerateMultipleChoiceLevel()
@@ -233,8 +221,6 @@ namespace FractionTrainer
             System.Diagnostics.Debug.WriteLine("--- GenerateMultipleChoiceLevel: Конец ---");
             ResetButtonAndFeedbackState();
         }
-
-        // Вспомогательный метод для создания ПРАВИЛЬНОГО варианта
         private FractionOption CreateCorrectFractionOption(int targetNum, int targetDen, List<ShapeType> availableShapes)
         {
             ShapeType shape = availableShapes[random.Next(availableShapes.Count)];
@@ -258,7 +244,6 @@ namespace FractionTrainer
                     {
                         optionNum = (targetNum * 3) / targetDen;
                         optionDen = 3;
-                        // ИЗМЕНЕНИЕ ЗДЕСЬ: проверяем, что optionNum от 1 до optionDen
                         if (optionNum < 1 || optionNum > optionDen) return null;
                     }
                     else return null;
@@ -268,7 +253,6 @@ namespace FractionTrainer
                     {
                         optionNum = (targetNum * 4) / targetDen;
                         optionDen = 4;
-                        // ИЗМЕНЕНИЕ ЗДЕСЬ: проверяем, что optionNum от 1 до optionDen
                         if (optionNum < 1 || optionNum > optionDen) return null;
                     }
                     else return null;
@@ -278,7 +262,6 @@ namespace FractionTrainer
                     {
                         optionNum = (targetNum * 8) / targetDen;
                         optionDen = 8;
-                        // ИЗМЕНЕНИЕ ЗДЕСЬ: проверяем, что optionNum от 1 до optionDen
                         if (optionNum < 1 || optionNum > optionDen) return null;
                     }
                     else return null;
@@ -286,11 +269,11 @@ namespace FractionTrainer
                 default:
                     return null;
             }
-            // Дополнительная проверка, что optionNum не ноль (хотя логика выше должна это обеспечить)
+  
             if (optionNum == 0 && optionDen > 0)
             {
                 System.Diagnostics.Debug.WriteLine($"[CreateCorrectFractionOption] Сгенерирован корректный вариант с нулевым числителем для {shape}: {optionNum}/{optionDen} из цели {targetNum}/{targetDen}. Этого не должно быть.");
-                return null; // Отвергаем такой вариант
+                return null;
             }
 
             return new FractionOption { Shape = shape, DisplayedNumerator = optionNum, DisplayedDenominator = optionDen, IsCorrect = true };
@@ -330,7 +313,7 @@ namespace FractionTrainer
             int attempts = 0;
             if (optionDen < 2 && (shape == ShapeType.Triangle || shape == ShapeType.Diamond || shape == ShapeType.Octagon))
             {
-                // Этого не должно происходить с фиксированными знаменателями, но на всякий случай для круга, если optionDen станет 1
+                
                 System.Diagnostics.Debug.WriteLine($"[CreateDistractor] Знаменатель {optionDen} слишком мал для генерации числителя < знаменателя и > 0.");
                 return null; // Не можем сгенерировать такой дистрактор
             }
@@ -361,9 +344,6 @@ namespace FractionTrainer
                 attempts++;
                 if (attempts > 20)
                 {
-                    // Если долго не можем подобрать уникальный неверный числитель,
-                    // возможно, все варианты (1..optionDen-1) уже совпадают с целевой дробью (очень маловероятно).
-                    // В этом случае можно просто вернуть null, чтобы попытаться сгенерировать другой тип дистрактора.
                     System.Diagnostics.Debug.WriteLine($"[CreateDistractor] Не удалось подобрать уникальный неверный числитель за {attempts} попыток для {shape} {optionNum}/{optionDen}, цель {targetValue}");
                     return null;
                 }
@@ -374,7 +354,6 @@ namespace FractionTrainer
         }
 
 
-        // Также обновите CheckButton_Click, чтобы он использовал FractionOption из Tag
         private void CheckButton_Click(object sender, RoutedEventArgs e)
         {
             string buttonContent = CheckButton.Content.ToString();
@@ -434,7 +413,6 @@ namespace FractionTrainer
             this.Close();
         }
 
-        // --- Вспомогательные методы для обратной связи и генерации ---
 
         private void ShowSuccessFeedback()
         {
@@ -460,10 +438,6 @@ namespace FractionTrainer
             CheckButton.Content = "Проверить";
             CheckButton.IsEnabled = true; // Убедимся, что кнопка активна
 
-            // --- ИЗМЕНЕННАЯ И ИСПРАВЛЕННАЯ ЛОГИКА ---
-            // Удаляем старый код, который вызывал ошибку.
-            // Вместо него напрямую устанавливаем ссылка на ресурсы из нашей темы.
-            // Это C#-эквивалент записи: Background="{DynamicResource ButtonAccentBrush}"
             CheckButton.SetResourceReference(Button.BackgroundProperty, "ButtonAccentBrush");
             CheckButton.SetResourceReference(Button.ForegroundProperty, "ButtonTextBrush");
         }
