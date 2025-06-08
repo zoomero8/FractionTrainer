@@ -282,7 +282,6 @@ namespace FractionTrainer
 
         private void ShowSuccessFeedback()
         {
-            FeedbackBackground.Background = new SolidColorBrush(Color.FromRgb(224, 251, 226));
             FeedbackText.Text = "✓";
             FeedbackText.Foreground = new SolidColorBrush(Color.FromRgb(34, 139, 34));
             FeedbackText.Visibility = Visibility.Visible;
@@ -293,31 +292,32 @@ namespace FractionTrainer
 
         private void ShowErrorFeedback()
         {
-            FeedbackBackground.Background = new SolidColorBrush(Color.FromRgb(255, 235, 238));
+            // --- Получаем цвета из текущей темы ---
+            var errorBackground = (Brush)Application.Current.TryFindResource("ErrorBackgroundBrush");
+            var errorForeground = (Brush)Application.Current.TryFindResource("ErrorBrush");
+
+            // --- Применяем цвета из темы ---
+            FeedbackText.Foreground = errorForeground;
+            CheckButton.Background = errorForeground; // Кнопка тоже становится красной
+
+            // Остальная логика остается без изменений
             FeedbackText.Text = "✗";
-            FeedbackText.Foreground = new SolidColorBrush(Color.FromRgb(220, 53, 69));
             FeedbackText.Visibility = Visibility.Visible;
             CheckButton.Content = "Заново";
-            CheckButton.Background = new SolidColorBrush(Color.FromRgb(220, 53, 69));
         }
 
         private void ResetButtonAndFeedbackState()
         {
-            FeedbackBackground.Background = Brushes.Transparent;
             FeedbackText.Visibility = Visibility.Collapsed;
             CheckButton.Content = "Проверить";
-            CheckButton.IsEnabled = true;
+            CheckButton.IsEnabled = true; // Убедимся, что кнопка активна
 
-            // Сброс цвета кнопки "Проверить"
-            if (Application.Current.TryFindResource("ModernButton") is Style modernButtonStyle &&
-                modernButtonStyle.Setters.OfType<Setter>().FirstOrDefault(s => s.Property == Control.BackgroundProperty) is Setter backgroundSetter)
-            {
-                CheckButton.Background = (Brush)backgroundSetter.Value;
-            }
-            else
-            {
-                CheckButton.Background = new SolidColorBrush(Color.FromRgb(0, 122, 255));
-            }
+            // --- ИЗМЕНЕННАЯ И ИСПРАВЛЕННАЯ ЛОГИКА ---
+            // Удаляем старый код, который вызывал ошибку.
+            // Вместо него напрямую устанавливаем ссылка на ресурсы из нашей темы.
+            // Это C#-эквивалент записи: Background="{DynamicResource ButtonAccentBrush}"
+            CheckButton.SetResourceReference(Button.BackgroundProperty, "ButtonAccentBrush");
+            CheckButton.SetResourceReference(Button.ForegroundProperty, "ButtonTextBrush");
         }
     }
 }

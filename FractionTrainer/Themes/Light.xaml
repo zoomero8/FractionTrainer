@@ -1,0 +1,38 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Color x:Key="BackgroundColor">#FFEAEAEA</Color>
+    <Color x:Key="TitleTextColor">#FF333333</Color>
+
+    <Color x:Key="ButtonAccentColor">#FF007AFF</Color>
+    <Color x:Key="ButtonTextColor">#FFFFFFFF</Color>
+    <Color x:Key="ButtonAccentHoverColor">#FF0056B3</Color>
+    <Color x:Key="IconColor">#FF4A4A4A</Color>
+    <Color x:Key="IconHoverBackgroundColor">#1A000000</Color>
+
+    <SolidColorBrush x:Key="PrimaryBackgroundBrush" Color="{StaticResource BackgroundColor}"/>
+    <SolidColorBrush x:Key="TitleTextBrush" Color="{StaticResource TitleTextColor}"/>
+    <SolidColorBrush x:Key="ButtonAccentBrush" Color="{StaticResource ButtonAccentColor}"/>
+    <SolidColorBrush x:Key="ButtonTextBrush" Color="{StaticResource ButtonTextColor}"/>
+    <SolidColorBrush x:Key="ButtonAccentHoverBrush" Color="{StaticResource ButtonAccentHoverColor}"/>
+    <SolidColorBrush x:Key="IconBrush" Color="{StaticResource IconColor}"/>
+    <SolidColorBrush x:Key="IconHoverBackgroundBrush" Color="{StaticResource IconHoverBackgroundColor}"/>
+    <SolidColorBrush x:Key="SecondaryBackgroundBrush" Color="#FFFFFFFF"/>
+    <SolidColorBrush x:Key="SecondaryTextBrush" Color="Gray"/>
+    <SolidColorBrush x:Key="BorderBrush" Color="#FFCCCCCC"/>
+    <SolidColorBrush x:Key="HeartBrush" Color="Red"/>
+    <SolidColorBrush x:Key="SuccessBrush" Color="#FF228B22"/>
+    <SolidColorBrush x:Key="ErrorBrush" Color="#FFDC3545"/>
+    <SolidColorBrush x:Key="OptionCardBackgroundBrush" Color="White"/>
+    <SolidColorBrush x:Key="OptionCardBorderBrush" Color="#FFDDDDDD"/>
+    <SolidColorBrush x:Key="OptionCardHoverBorderBrush" Color="{StaticResource ButtonAccentColor}"/>
+    <SolidColorBrush x:Key="OptionCardCheckedBackgroundBrush" Color="#FFE0F0FF"/>
+    <SolidColorBrush x:Key="ErrorBackgroundBrush" Color="#FFFFEBEE"/>
+
+    <SolidColorBrush x:Key="PairSelectedBackgroundBrush" Color="#FFE0F0FF"/>
+    <SolidColorBrush x:Key="PairSelectedBorderBrush" Color="{StaticResource ButtonAccentColor}"/>
+    <SolidColorBrush x:Key="SingleSelectedBackgroundBrush" Color="#FFF0F0F0"/>
+    <SolidColorBrush x:Key="SingleSelectedBorderBrush" Color="Gray"/>
+    <SolidColorBrush x:Key="SuccessBackgroundBrush" Color="#FFE0F8E3"/>
+    <SolidColorBrush x:Key="SuccessAccentBrush" Color="#FF28a745"/>
+</ResourceDictionary>

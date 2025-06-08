@@ -113,24 +113,28 @@ namespace FractionTrainer
         /// </summary>
         private void UpdateTopPanel()
         {
-            LevelProgressTextBlock.Text = $"Уровень {_gameStateManager.CurrentLevel}/{10}";
+            LevelProgressTextBlock.Text = $"Уровень {_gameStateManager.CurrentLevel}/{15}";
+
+            // Получаем кисть для сердечек из ресурсов приложения
+            var heartBrush = (Brush)Application.Current.TryFindResource("HeartBrush");
+            if (heartBrush == null)
+            {
+                // Запасной вариант, если ресурс не найден
+                heartBrush = Brushes.Red;
+            }
 
             LivesPanel.Children.Clear();
             for (int i = 0; i < _gameStateManager.Lives; i++)
             {
-                // --- ИЗМЕНЕНИЕ ЗДЕСЬ ---
-                // Заменяем старый TextBlock на новый, с иконочным шрифтом и цветом
-
                 var heartIcon = new TextBlock
                 {
-                    FontFamily = new FontFamily("Segoe MDL2 Assets"),     // 1. Указываем иконочный шрифт
-                    Text = "\uEB52",                                      // 2. Правильный код для ЗАЛИТОГО сердца
+                    FontFamily = new FontFamily("Segoe MDL2 Assets"),
+                    Text = "\uEB52", // Используем ЗАЛИТОЕ сердце
                     FontSize = 20,
-                    Foreground = new SolidColorBrush(Color.FromRgb(255, 18, 0)), // 3. Задаем любой цвет (например, розово-красный)
+                    Foreground = heartBrush, // Применяем кисть из темы
                     Margin = new Thickness(3, 0, 3, 0),
-                    VerticalAlignment = VerticalAlignment.Center          // 4. Улучшаем вертикальное выравнивание
+                    VerticalAlignment = VerticalAlignment.Center
                 };
-
                 LivesPanel.Children.Add(heartIcon);
             }
         }

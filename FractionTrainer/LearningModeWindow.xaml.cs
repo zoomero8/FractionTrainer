@@ -138,7 +138,6 @@ namespace FractionTrainer
         /// </summary>
         private void ShowSuccessFeedback()
         {
-            FeedbackBackground.Background = new SolidColorBrush(Color.FromRgb(224, 251, 226)); // Светло-зеленый
             FeedbackText.Text = "✓"; // Только галочка
             FeedbackText.Foreground = new SolidColorBrush(Color.FromRgb(34, 139, 34)); // Зеленый
             FeedbackText.Visibility = Visibility.Visible;
@@ -152,7 +151,6 @@ namespace FractionTrainer
         /// </summary>
         private void ShowErrorFeedback()
         {
-            FeedbackBackground.Background = new SolidColorBrush(Color.FromRgb(255, 235, 238)); // Светло-красный
             FeedbackText.Text = "✗"; // Только крестик
             FeedbackText.Foreground = new SolidColorBrush(Color.FromRgb(220, 53, 69)); // Красный
             FeedbackText.Visibility = Visibility.Visible;
@@ -166,21 +164,20 @@ namespace FractionTrainer
         /// </summary>
         private void ResetButtonAndFeedbackState()
         {
-            FeedbackBackground.Background = Brushes.Transparent;
             FeedbackText.Visibility = Visibility.Collapsed;
             CheckButton.Content = "Проверить";
 
-            // Пытаемся вернуть исходный синий цвет из стиля
-            if (Application.Current.TryFindResource("ModernButton") is Style modernButtonStyle)
-            {
-                var backgroundSetter = modernButtonStyle.Setters.OfType<Setter>().FirstOrDefault(s => s.Property == Button.BackgroundProperty);
-                if (backgroundSetter != null)
-                {
-                    CheckButton.Background = (Brush)backgroundSetter.Value;
-                    return;
-                }
-            }
-            CheckButton.Background = new SolidColorBrush(Color.FromRgb(0, 122, 255)); // Запасной синий
+            // --- ИЗМЕНЕНИЯ ЗДЕСЬ ---
+            // Удаляем старую логику, которая вызывала ошибку.
+            // Вместо нее используем SetResourceReference для установки стиля из темы.
+            // Это C#-эквивалент записи: Background="{DynamicResource ButtonAccentBrush}"
+            CheckButton.SetResourceReference(Button.BackgroundProperty, "ButtonAccentBrush");
+            CheckButton.SetResourceReference(Button.ForegroundProperty, "ButtonTextBrush");
+
+            // Остальные строки оставляем как есть
+            CheckButton.IsEnabled = true;
+            DecreaseDenominatorButton.IsEnabled = true;
+            IncreaseDenominatorButton.IsEnabled = true;
         }
     }
 }

@@ -5,86 +5,58 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:FractionTrainer"
              mc:Ignorable="d" 
-             d:DesignHeight="650" d:DesignWidth="400" Background="#FFEAEAEA">
-
-    <UserControl.Resources>
-        <!-- Стиль для карточки варианта ответа, адаптированный для управления цветом из кода -->
-        <Style x:Key="OptionCardToggleStyle" TargetType="ToggleButton">
-            <Setter Property="Background" Value="White"/>
-            <Setter Property="BorderBrush" Value="#FFDDDDDD"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Margin" Value="5"/>
-            <Setter Property="Padding" Value="5"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ToggleButton">
-                        <Border x:Name="OptionBorder"
-                                Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="8">
-                            <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="{TemplateBinding Padding}"/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="OptionBorder" Property="BorderBrush" Value="#FF007AFF"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-    </UserControl.Resources>
+             d:DesignHeight="650" d:DesignWidth="400"
+             Background="{DynamicResource PrimaryBackgroundBrush}">
 
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <!-- Заголовок -->
             <RowDefinition Height="*"/>
-            <!-- Варианты -->
             <RowDefinition Height="Auto"/>
-            <!-- Кнопка Проверить и панель -->
         </Grid.RowDefinitions>
 
-        <!-- Строка 0: Заголовок -->
         <TextBlock Grid.Row="0" Text="Найдите пары" 
-                   Style="{StaticResource ModernTitleText}" FontSize="22" 
+                   Style="{DynamicResource ModernTitleText}" FontSize="22" 
                    Margin="0,20,0,10"/>
 
-        <!-- Строка 1: Панель с вариантами ответов (3x2) -->
         <UniformGrid Grid.Row="1" Columns="2" Rows="3" Margin="10,0,10,0">
-            <ToggleButton x:Name="OptionButton1" Style="{StaticResource OptionCardToggleStyle}" Checked="OptionButton_StateChanged" Unchecked="OptionButton_StateChanged">
+            <ToggleButton x:Name="OptionButton1" Style="{DynamicResource OptionCardToggleStyle}" Checked="OptionButton_StateChanged" Unchecked="OptionButton_StateChanged">
                 <local:FractionShapeVisualizer x:Name="OptionShape1" IsInteractionEnabled="False"/>
             </ToggleButton>
-            <ToggleButton x:Name="OptionButton2" Style="{StaticResource OptionCardToggleStyle}" Checked="OptionButton_StateChanged" Unchecked="OptionButton_StateChanged">
+            <ToggleButton x:Name="OptionButton2" Style="{DynamicResource OptionCardToggleStyle}" Checked="OptionButton_StateChanged" Unchecked="OptionButton_StateChanged">
                 <local:FractionShapeVisualizer x:Name="OptionShape2" IsInteractionEnabled="False"/>
             </ToggleButton>
-            <ToggleButton x:Name="OptionButton3" Style="{StaticResource OptionCardToggleStyle}" Checked="OptionButton_StateChanged" Unchecked="OptionButton_StateChanged">
+            <ToggleButton x:Name="OptionButton3" Style="{DynamicResource OptionCardToggleStyle}" Checked="OptionButton_StateChanged" Unchecked="OptionButton_StateChanged">
                 <local:FractionShapeVisualizer x:Name="OptionShape3" IsInteractionEnabled="False"/>
             </ToggleButton>
-            <ToggleButton x:Name="OptionButton4" Style="{StaticResource OptionCardToggleStyle}" Checked="OptionButton_StateChanged" Unchecked="OptionButton_StateChanged">
+            <ToggleButton x:Name="OptionButton4" Style="{DynamicResource OptionCardToggleStyle}" Checked="OptionButton_StateChanged" Unchecked="OptionButton_StateChanged">
                 <local:FractionShapeVisualizer x:Name="OptionShape4" IsInteractionEnabled="False"/>
             </ToggleButton>
-            <ToggleButton x:Name="OptionButton5" Style="{StaticResource OptionCardToggleStyle}" Checked="OptionButton_StateChanged" Unchecked="OptionButton_StateChanged">
+            <ToggleButton x:Name="OptionButton5" Style="{DynamicResource OptionCardToggleStyle}" Checked="OptionButton_StateChanged" Unchecked="OptionButton_StateChanged">
                 <local:FractionShapeVisualizer x:Name="OptionShape5" IsInteractionEnabled="False"/>
             </ToggleButton>
-            <ToggleButton x:Name="OptionButton6" Style="{StaticResource OptionCardToggleStyle}" Checked="OptionButton_StateChanged" Unchecked="OptionButton_StateChanged">
+            <ToggleButton x:Name="OptionButton6" Style="{DynamicResource OptionCardToggleStyle}" Checked="OptionButton_StateChanged" Unchecked="OptionButton_StateChanged">
                 <local:FractionShapeVisualizer x:Name="OptionShape6" IsInteractionEnabled="False"/>
             </ToggleButton>
         </UniformGrid>
 
-        <!-- Строка 2: Единый контейнер для кнопки и обратной связи -->
         <Grid Grid.Row="2" x:Name="BottomBarContainer" Margin="10,15,10,20">
-            <Border x:Name="FeedbackBackground" Background="Transparent" CornerRadius="5" Height="50"/>
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock x:Name="FeedbackText" Grid.Column="0" Text="✓" Foreground="#006400" FontSize="20" FontWeight="SemiBold" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="20,0,0,0" Visibility="Collapsed"/>
-                <Button x:Name="CheckButton" Grid.Column="1" Content="Проверить" Width="200" Height="50" Style="{StaticResource ModernButton}" Click="CheckButton_Click"/>
+
+                <TextBlock x:Name="FeedbackText" Grid.Column="0" Text="✓" 
+                           Foreground="{DynamicResource SuccessBrush}" 
+                           FontSize="20" FontWeight="SemiBold" 
+                           HorizontalAlignment="Left" VerticalAlignment="Center" 
+                           Margin="20,0,0,0" Visibility="Collapsed"/>
+
+                <Button x:Name="CheckButton" Grid.Column="1" Content="Проверить" Width="200" Height="50" 
+                        Style="{DynamicResource ModernButton}" 
+                        Click="CheckButton_Click"/>
             </Grid>
         </Grid>
     </Grid>

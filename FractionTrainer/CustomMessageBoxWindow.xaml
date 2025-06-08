@@ -31,7 +31,7 @@
             </ScrollViewer>
 
             <Button x:Name="OkButton" Grid.Row="2" Content="OK" 
-                    Style="{StaticResource ModernButton}" 
+                    Style="{DynamicResource ModernButton}" 
                     Width="100" Height="35" 
                     HorizontalAlignment="Right" Click="OkButton_Click"/>
         </Grid>

@@ -5,7 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:FractionTrainer"
              mc:Ignorable="d" 
-             d:DesignHeight="650" d:DesignWidth="400" Background="#FFEAEAEA">
+             d:DesignHeight="650" d:DesignWidth="400"
+             Background="{DynamicResource PrimaryBackgroundBrush}">
 
     <Grid>
         <Grid.RowDefinitions>
@@ -16,30 +17,39 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,20,0,10">
-            <TextBlock x:Name="NumeratorTextBlock" Text="5" Style="{StaticResource FractionDisplayText}" Padding="0" Margin="0,0,0,-12"/>
+            <TextBlock x:Name="NumeratorTextBlock" Text="5" Style="{DynamicResource FractionDisplayText}" Padding="0" Margin="0,0,0,-12"/>
             <Rectangle Height="3" Width="50" Fill="{Binding Foreground, ElementName=NumeratorTextBlock}" Margin="0,6,0,0" HorizontalAlignment="Center"/>
-            <TextBlock x:Name="DenominatorTextBlock" Text="8" Style="{StaticResource FractionDisplayText}" Padding="0" Margin="0,-12,0,0"/>
+            <TextBlock x:Name="DenominatorTextBlock" Text="8" Style="{DynamicResource FractionDisplayText}" Padding="0" Margin="0,-12,0,0"/>
         </StackPanel>
 
-        <Border Grid.Row="1" Margin="30,15,30,15" Background="White" CornerRadius="10" BorderBrush="#FFDDDDDD" BorderThickness="1">
+        <Border Grid.Row="1" Margin="30,15,30,15" CornerRadius="10" BorderThickness="1"
+                Background="{DynamicResource SecondaryBackgroundBrush}"
+                BorderBrush="{DynamicResource BorderBrush}">
             <local:FractionShapeVisualizer x:Name="FractionDisplay" Margin="10"/>
         </Border>
 
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
-            <Button x:Name="DecreaseDenominatorButton" Content="- доля" Style="{StaticResource ModernButton}" Background="#FF6c757d" Width="120" Height="40" Click="DecreaseDenominatorButton_Click"/>
-            <Button x:Name="IncreaseDenominatorButton" Content="+ доля" Style="{StaticResource ModernButton}" Background="#FF6c757d" Width="120" Height="40" Click="IncreaseDenominatorButton_Click"/>
+            <Button x:Name="DecreaseDenominatorButton" Content="- доля" Style="{DynamicResource ModernButton}" Width="120" Height="40" Click="DecreaseDenominatorButton_Click"/>
+            <Button x:Name="IncreaseDenominatorButton" Content="+ доля" Style="{DynamicResource ModernButton}" Width="120" Height="40" Click="IncreaseDenominatorButton_Click"/>
         </StackPanel>
 
         <Grid Grid.Row="3" x:Name="BottomBarContainer" Margin="10,10,10,20">
-            <Border x:Name="FeedbackBackground" Background="Transparent" CornerRadius="5" Height="50"/>
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock x:Name="FeedbackText" Grid.Column="0" Text="✓" Foreground="#006400" FontSize="20" FontWeight="SemiBold" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="20,0,0,0" Visibility="Collapsed"/>
-                <Button x:Name="CheckButton" Grid.Column="1" Content="Проверить" Width="200" Height="50" Style="{StaticResource ModernButton}" Click="CheckButton_Click"/>
+
+                <TextBlock x:Name="FeedbackText" Grid.Column="0" Text="✓" 
+                           Foreground="{DynamicResource SuccessBrush}" 
+                           FontSize="20" FontWeight="SemiBold" 
+                           HorizontalAlignment="Left" VerticalAlignment="Center" 
+                           Margin="20,0,0,0" Visibility="Collapsed"/>
+
+                <Button x:Name="CheckButton" Grid.Column="1" Content="Проверить" Width="200" Height="50" 
+                        Style="{DynamicResource ModernButton}" 
+                        Click="CheckButton_Click"/>
             </Grid>
         </Grid>
     </Grid>

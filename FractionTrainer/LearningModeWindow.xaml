@@ -8,71 +8,58 @@
         Title="Режим обучения"
         Height="720" Width="400"
         WindowStartupLocation="CenterScreen"
-        Background="#FFEAEAEA" 
-        WindowStyle="None" BorderThickness="1" BorderBrush="#FFCCCCCC">
+        WindowStyle="None" BorderThickness="1"
+        Background="{DynamicResource PrimaryBackgroundBrush}"
+        BorderBrush="{DynamicResource BorderBrush}">
 
     <Grid>
-        <!-- Внутренний Grid для всего контента -->
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
-                <!-- Заголовок и кнопка Назад -->
                 <RowDefinition Height="Auto"/>
-                <!-- Целевая дробь -->
                 <RowDefinition Height="*"/>
-                <!-- Фигура -->
                 <RowDefinition Height="Auto"/>
-                <!-- Кнопки +/- доля -->
                 <RowDefinition Height="Auto"/>
-                <!-- Контейнер для кнопки и панели -->
             </Grid.RowDefinitions>
 
-            <!-- Строка 0, 1, 2, 3 - остаются без изменений -->
             <Grid Grid.Row="0" Margin="5,15,5,15">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="50"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="50"/>
                 </Grid.ColumnDefinitions>
-                <Button x:Name="BackButtonTop" Grid.Column="0" Style="{StaticResource ArrowBackButton}" Click="BackButton_Click" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                <TextBlock Grid.Column="1" Text="Соберите дробь:" Style="{StaticResource ModernTitleText}" FontSize="22" Margin="0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <Button x:Name="BackButtonTop" Grid.Column="0" Style="{DynamicResource ArrowBackButton}" Click="BackButton_Click" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="1" Text="Соберите дробь:" Style="{DynamicResource ModernTitleText}" FontSize="22" Margin="0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Grid>
+
             <StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,10">
-                <TextBlock x:Name="NumeratorTextBlock" Text="5" Style="{StaticResource FractionDisplayText}" Padding="0" Margin="0,0,0,-12"/>
+                <TextBlock x:Name="NumeratorTextBlock" Text="5" Style="{DynamicResource FractionDisplayText}" Padding="0" Margin="0,0,0,-12"/>
                 <Rectangle Height="3" Width="50" Fill="{Binding Foreground, ElementName=NumeratorTextBlock}" Margin="0,6,0,0" HorizontalAlignment="Center"/>
-                <TextBlock x:Name="DenominatorTextBlock" Text="8" Style="{StaticResource FractionDisplayText}" Padding="0" Margin="0,-12,0,0"/>
+                <TextBlock x:Name="DenominatorTextBlock" Text="8" Style="{DynamicResource FractionDisplayText}" Padding="0" Margin="0,-12,0,0"/>
             </StackPanel>
-            <Border Grid.Row="2" Margin="30,15,30,15" Background="White" CornerRadius="10" BorderBrush="#FFDDDDDD" BorderThickness="1">
+
+            <Border Grid.Row="2" Margin="30,15,30,15" CornerRadius="10" BorderThickness="1"
+                    Background="{DynamicResource SecondaryBackgroundBrush}"
+                    BorderBrush="{DynamicResource BorderBrush}">
                 <local:FractionShapeVisualizer x:Name="FractionDisplay" Margin="10"/>
             </Border>
+
             <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
-                <Button x:Name="DecreaseDenominatorButton" Content="- доля" Style="{StaticResource ModernButton}" Background="#FF6c757d" Width="120" Height="40" Click="DecreaseDenominatorButton_Click"/>
-                <Button x:Name="IncreaseDenominatorButton" Content="+ доля" Style="{StaticResource ModernButton}" Background="#FF6c757d" Width="120" Height="40" Click="IncreaseDenominatorButton_Click"/>
+                <Button x:Name="DecreaseDenominatorButton" Content="- доля" Style="{DynamicResource ModernButton}" Width="120" Height="40" Click="DecreaseDenominatorButton_Click"/>
+                <Button x:Name="IncreaseDenominatorButton" Content="+ доля" Style="{DynamicResource ModernButton}" Width="120" Height="40" Click="IncreaseDenominatorButton_Click"/>
             </StackPanel>
 
-            <!-- Строка 4: Единый контейнер для кнопки и обратной связи -->
             <Grid Grid.Row="4" x:Name="BottomBarContainer" Margin="10,10,10,20">
-                <!-- Этот Border будет служить фоном для всей панели -->
-                <Border x:Name="FeedbackBackground"
-                        Background="Transparent"
-                        CornerRadius="5"
-                        Height="50"/>
-
-                <!-- Внутренняя сетка для размещения текста и кнопки -->
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
-                        <!-- Левая часть для текста -->
                         <ColumnDefinition Width="Auto"/>
-                        <!-- Центральная часть для кнопки -->
                         <ColumnDefinition Width="*"/>
-                        <!-- Правая часть (пустая) -->
                     </Grid.ColumnDefinitions>
 
-                    <!-- Текст обратной связи, изначально скрыт -->
                     <TextBlock x:Name="FeedbackText" Grid.Column="0"
                                Text="✓"
-                               Foreground="#006400"
+                               Foreground="{DynamicResource SuccessBrush}"
                                FontSize="25"
                                FontWeight="SemiBold"
                                HorizontalAlignment="Left"
@@ -80,11 +67,10 @@
                                Margin="20,0,0,0"
                                Visibility="Collapsed"/>
 
-                    <!-- Кнопка Проверить/Продолжить/Заново -->
                     <Button x:Name="CheckButton" Grid.Column="1"
                             Content="Проверить" 
                             Width="200" Height="50" 
-                            Style="{StaticResource ModernButton}" 
+                            Style="{DynamicResource ModernButton}" 
                             Click="CheckButton_Click"/>
                 </Grid>
             </Grid>

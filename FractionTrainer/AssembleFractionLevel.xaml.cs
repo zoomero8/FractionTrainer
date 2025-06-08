@@ -34,12 +34,12 @@ namespace FractionTrainer
         {
             string buttonContent = CheckButton.Content.ToString();
 
-            // Если кнопка в режиме "Заново", сбрасываем попытку.
-            // "Продолжить" здесь не используется, т.к. переход на след. уровень управляется извне.
+            // ИЗМЕНЕНИЕ 1: Теперь при нажатии на "Заново" мы сообщаем о провале
             if (buttonContent == "Заново")
             {
-                FractionDisplay.ResetUserSelectionAndDraw();
-                ResetButtonAndFeedbackState();
+                // Сообщаем родительскому окну, что попытка была неудачной.
+                // Родительское окно само снимет жизнь и перезагрузит уровень.
+                LevelCompleted?.Invoke(this, false);
                 return;
             }
 
@@ -49,7 +49,6 @@ namespace FractionTrainer
 
             if (userSelectedDenominator <= 1 && userSelectedNumerator == 0)
             {
-                // В режиме проверки не используем кастомные окна, можно просто ничего не делать или встряхнуть кнопку
                 return;
             }
 
@@ -59,19 +58,18 @@ namespace FractionTrainer
 
             if (isCorrect)
             {
-                ShowSuccessFeedback(); // Показываем зеленую панель
-                // Вызываем событие, сообщая, что уровень пройден ПРАВИЛЬНО
-                // Задержка, чтобы пользователь увидел результат перед переходом.
+                // Логика для правильного ответа остается без изменений
+                ShowSuccessFeedback();
                 Dispatcher.Invoke(async () => {
-                    await System.Threading.Tasks.Task.Delay(1000); // 1 секунда
+                    await System.Threading.Tasks.Task.Delay(1000);
                     LevelCompleted?.Invoke(this, true);
                 });
             }
             else
             {
-                ShowErrorFeedback(); // Показываем красную панель
-                // Вызываем событие, сообщая, что уровень пройден НЕПРАВИЛЬНО
-                LevelCompleted?.Invoke(this, false);
+                // ИЗМЕНЕНИЕ 2: При ошибке мы просто показываем фидбек и ЖДЕМ.
+                // Мы НЕ вызываем LevelCompleted. Мы ждем, пока пользователь нажмет "Заново".
+                ShowErrorFeedback();
             }
         }
 
@@ -118,7 +116,6 @@ namespace FractionTrainer
 
         private void ShowSuccessFeedback()
         {
-            FeedbackBackground.Background = new SolidColorBrush(Color.FromRgb(224, 251, 226));
             FeedbackText.Text = "✓";
             FeedbackText.Foreground = new SolidColorBrush(Color.FromRgb(34, 139, 34));
             FeedbackText.Visibility = Visibility.Visible;
@@ -131,36 +128,38 @@ namespace FractionTrainer
 
         private void ShowErrorFeedback()
         {
-            FeedbackBackground.Background = new SolidColorBrush(Color.FromRgb(255, 235, 238));
+            // --- Получаем цвета из текущей темы с "запасным" вариантом ---
+
+            // Пытаемся найти кисть для фона. Если не нашли, используем светло-розовый.
+            var errorBackground = (Brush)Application.Current.TryFindResource("ErrorBackgroundBrush")
+                                  ?? new SolidColorBrush(Color.FromRgb(255, 235, 238));
+
+            // Пытаемся найти кисть для текста и кнопки. Если не нашли, используем красный.
+            var errorForeground = (Brush)Application.Current.TryFindResource("ErrorBrush")
+                                  ?? new SolidColorBrush(Color.FromRgb(220, 53, 69));
+
+            // --- Применяем цвета ---
+            FeedbackText.Foreground = errorForeground;
+            CheckButton.Background = errorForeground;
+
+            // Остальная логика остается без изменений
             FeedbackText.Text = "✗";
-            FeedbackText.Foreground = new SolidColorBrush(Color.FromRgb(220, 53, 69));
             FeedbackText.Visibility = Visibility.Visible;
-            CheckButton.Content = "Ошибка";
-            CheckButton.Background = new SolidColorBrush(Color.FromRgb(220, 53, 69));
-            CheckButton.IsEnabled = false; // Блокируем кнопку после ответа
-            DecreaseDenominatorButton.IsEnabled = false;
-            IncreaseDenominatorButton.IsEnabled = false;
+            CheckButton.Content = "Заново";
         }
 
         private void ResetButtonAndFeedbackState()
         {
-            FeedbackBackground.Background = Brushes.Transparent;
             FeedbackText.Visibility = Visibility.Collapsed;
             CheckButton.Content = "Проверить";
+            CheckButton.IsEnabled = true; // Убедимся, что кнопка активна
 
-            if (Application.Current.TryFindResource("ModernButton") is Style modernButtonStyle)
-            {
-                var backgroundSetter = modernButtonStyle.Setters.OfType<Setter>().FirstOrDefault(s => s.Property == Button.BackgroundProperty);
-                if (backgroundSetter != null) CheckButton.Background = (Brush)backgroundSetter.Value;
-            }
-            else
-            {
-                CheckButton.Background = new SolidColorBrush(Color.FromRgb(0, 122, 255));
-            }
-
-            CheckButton.IsEnabled = true;
-            DecreaseDenominatorButton.IsEnabled = true;
-            IncreaseDenominatorButton.IsEnabled = true;
+            // --- ИЗМЕНЕННАЯ И ИСПРАВЛЕННАЯ ЛОГИКА ---
+            // Удаляем старый код, который вызывал ошибку.
+            // Вместо него напрямую устанавливаем ссылка на ресурсы из нашей темы.
+            // Это C#-эквивалент записи: Background="{DynamicResource ButtonAccentBrush}"
+            CheckButton.SetResourceReference(Button.BackgroundProperty, "ButtonAccentBrush");
+            CheckButton.SetResourceReference(Button.ForegroundProperty, "ButtonTextBrush");
         }
     }
 }

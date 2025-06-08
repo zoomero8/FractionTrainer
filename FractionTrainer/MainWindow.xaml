@@ -5,84 +5,56 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FractionTrainer"
         mc:Ignorable="d"
-        Title="Тренажёр собрать дробь" 
+        Title="Тренажёр Дробей" 
         Height="720" Width="400"
         WindowStartupLocation="CenterScreen"
-        Background="#FFEAEAEA">
-    <Window.Resources>
-        <Style x:Key="ModernButton" TargetType="Button">
-            <Setter Property="Background" Value="#FF007AFF"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="FontSize" Value="16"/>
-            <Setter Property="Padding" Value="10,5"/>
-            <Setter Property="Margin" Value="10"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}"
-                                CornerRadius="5">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#FF0056B3"/>
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="Background" Value="#FF003D80"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <Style x:Key="ModernTitleText" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="22"/>
-            <Setter Property="FontWeight" Value="Normal"/>
-            <Setter Property="Foreground" Value="#FF4A4A4A"/>
-            <Setter Property="HorizontalAlignment" Value="Center"/>
-            <Setter Property="Margin" Value="0,0,0,25"/>
-        </Style>
-    </Window.Resources>
+        Background="{DynamicResource PrimaryBackgroundBrush}">
 
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" 
-                   FontSize="32" FontWeight="Bold" Foreground="#FF007AFF" 
-                   HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center"
-                   Margin="0,35,0,25">
+        <Grid Grid.Row="0" Margin="5">
+            <ToggleButton x:Name="ThemeToggleButton" 
+              Style="{DynamicResource ThemeToggleButtonStyle}"
+              HorizontalAlignment="Right"
+              Checked="ThemeToggleButton_Checked"
+              Unchecked="ThemeToggleButton_Unchecked"/>
+        </Grid>
+
+        <TextBlock Grid.Row="1" 
+                   TextWrapping="Wrap" TextAlignment="Center"
+                   Margin="0,10,0,25"
+                   Style="{DynamicResource FractionDisplayText}">
             Тренажёр<LineBreak/>Собери дробь
         </TextBlock>
 
-        <StackPanel Grid.Row="1" 
+        <StackPanel Grid.Row="2" 
                     HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical">
 
-            <TextBlock Text="Выберите режим:" Style="{StaticResource ModernTitleText}"/>
+            <TextBlock Text="Выберите режим:" Style="{DynamicResource ModernTitleText}"/>
 
             <Button x:Name="LearningModeButton" Content="Собери дробь" 
                     Width="220" Height="50" 
-                    Style="{StaticResource ModernButton}" 
+                    Style="{DynamicResource ModernButton}" 
                     Click="LearningModeButton_Click"/>
 
             <Button x:Name="MultipleChoiceModeButton" Content="Выберите варианты" 
                     Width="220" Height="50" 
-                    Style="{StaticResource ModernButton}" 
+                    Style="{DynamicResource ModernButton}" 
                     Click="MultipleChoiceModeButton_Click"/>
 
             <Button x:Name="FindPairsModeButton" Content="Найдите пары" 
                     Width="220" Height="50" 
-                    Style="{StaticResource ModernButton}" 
+                    Style="{DynamicResource ModernButton}" 
                     Click="FindPairsModeButton_Click"/>
 
             <Button x:Name="TestModeButton" Content="Проверка знаний" 
                     Width="220" Height="50" 
-                    Style="{StaticResource ModernButton}" 
+                    Style="{DynamicResource ModernButton}" 
                     Click="TestModeButton_Click"/>
         </StackPanel>
     </Grid>
