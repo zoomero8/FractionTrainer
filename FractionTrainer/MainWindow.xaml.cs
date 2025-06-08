@@ -54,8 +54,19 @@ namespace FractionTrainer
 
         private void TestModeButton_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Режим проверки знаний еще не реализован.", "Информация");
-            // TODO: Реализовать переход к окну/режиму проверки знаний
+            // Создаем экземпляр окна "Проверки знаний"
+            KnowledgeCheckWindow knowledgeCheckWindow = new KnowledgeCheckWindow();
+            knowledgeCheckWindow.Owner = this; // Устанавливаем текущее окно как родительское
+
+            // Добавляем обработчик, который покажет главное меню,
+            // когда окно проверки знаний закроется
+            knowledgeCheckWindow.Closed += (s, args) =>
+            {
+                this.Show();
+            };
+
+            knowledgeCheckWindow.Show(); // Показываем окно проверки знаний
+            this.Hide(); // Скрываем текущее окно (главное меню)
         }
     }
 }

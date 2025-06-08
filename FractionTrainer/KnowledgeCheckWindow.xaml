@@ -1,0 +1,74 @@
+﻿<Window x:Class="FractionTrainer.KnowledgeCheckWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FractionTrainer"
+        mc:Ignorable="d"
+        Title="Проверка знаний"
+        Height="720" Width="400"
+        WindowStartupLocation="CenterOwner"
+        Background="#FFEAEAEA"
+        WindowStyle="None" BorderThickness="1" BorderBrush="#FFCCCCCC">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Верхняя панель (жизни, уровень) -->
+            <RowDefinition Height="*"/>
+            <!-- Основной контент (уровень) -->
+        </Grid.RowDefinitions>
+
+        <!-- Строка 0: Верхняя панель -->
+        <Border Grid.Row="0" Background="White" Padding="10,5,10,5">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <!-- Кнопка Назад -->
+                    <ColumnDefinition Width="*"/>
+                    <!-- Прогресс -->
+                    <ColumnDefinition Width="Auto"/>
+                    <!-- Жизни -->
+                </Grid.ColumnDefinitions>
+
+                <Button x:Name="BackButton" Grid.Column="0" 
+                        Style="{StaticResource ArrowBackButton}" 
+                        Click="BackButton_Click"/>
+
+                <StackPanel Grid.Column="1" Orientation="Vertical" HorizontalAlignment="Center">
+                    <TextBlock x:Name="LevelTitleTextBlock" Text="Проверка знаний" FontWeight="SemiBold" FontSize="16" HorizontalAlignment="Center"/>
+                    <TextBlock x:Name="LevelProgressTextBlock" Text="Уровень 1/15" FontSize="12" Foreground="Gray" HorizontalAlignment="Center"/>
+                </StackPanel>
+
+                <StackPanel x:Name="LivesPanel" Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                    <!-- Жизни (сердечки) будут добавляться сюда из кода -->
+                    <TextBlock FontFamily="Segoe MDL2 Assets" 
+                       Text="&#xEB52;" 
+                       FontSize="25" 
+                       Foreground="Red" />
+                    <TextBlock FontFamily="Segoe MDL2 Assets" 
+                       Text="&#xEB52;" 
+                       FontSize="25" 
+                       Foreground="Red" />
+                    <TextBlock FontFamily="Segoe MDL2 Assets" 
+                       Text="&#xEB52;" 
+                       FontSize="25" 
+                       Foreground="Red" />
+                    <TextBlock FontFamily="Segoe MDL2 Assets" 
+                       Text="&#xEB52;" 
+                       FontSize="25" 
+                       Foreground="Red" />
+                    <TextBlock FontFamily="Segoe MDL2 Assets" 
+                       Text="&#xEB52;" 
+                       FontSize="25" 
+                       Foreground="Red" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Строка 1: Основной контент -->
+        <!-- ContentPresenter будет отображать UI для текущего типа уровня -->
+        <ContentPresenter Grid.Row="1" x:Name="LevelContentPresenter"/>
+
+    </Grid>
+</Window>

@@ -65,7 +65,7 @@
 
             <TextBlock Text="Выберите режим:" Style="{StaticResource ModernTitleText}"/>
 
-            <Button x:Name="LearningModeButton" Content="Обучение" 
+            <Button x:Name="LearningModeButton" Content="Собери дробь" 
                     Width="220" Height="50" 
                     Style="{StaticResource ModernButton}" 
                     Click="LearningModeButton_Click"/>
