@@ -8,7 +8,6 @@
         Title="Найдите пары"
         Height="720" Width="400"
         WindowStartupLocation="CenterOwner"
-        WindowStyle="None" BorderThickness="1"
         Background="{DynamicResource PrimaryBackgroundBrush}"
         BorderBrush="{DynamicResource BorderBrush}">
 
@@ -26,7 +25,7 @@
                 <ColumnDefinition Width="50"/>
             </Grid.ColumnDefinitions>
             <Button x:Name="BackButton" Grid.Column="0" Style="{DynamicResource ArrowBackButton}" Click="BackButton_Click" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-            <TextBlock Grid.Column="1" Text="Найдите пары" Style="{DynamicResource ModernTitleText}" FontSize="22" Margin="0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <TextBlock Grid.Column="1" Text="Найдите все пары" Style="{DynamicResource ModernTitleText}" FontSize="22" Margin="0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
         </Grid>
 
         <UniformGrid Grid.Row="1" Columns="2" Rows="3" Margin="10,0,10,0">

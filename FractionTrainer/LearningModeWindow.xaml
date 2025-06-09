@@ -8,7 +8,6 @@
         Title="Режим обучения"
         Height="720" Width="400"
         WindowStartupLocation="CenterScreen"
-        WindowStyle="None" BorderThickness="1"
         Background="{DynamicResource PrimaryBackgroundBrush}"
         BorderBrush="{DynamicResource BorderBrush}">
 

@@ -15,7 +15,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Text="Найдите пары" 
+        <TextBlock Grid.Row="0" Text="Найдите все пары" 
                    Style="{DynamicResource ModernTitleText}" FontSize="22" 
                    Margin="0,20,0,10"/>
 

@@ -8,8 +8,6 @@
         Title="Проверка знаний"
         Height="720" Width="400"
         WindowStartupLocation="CenterOwner"
-        WindowStyle="None" 
-        BorderThickness="1"
         Background="{DynamicResource PrimaryBackgroundBrush}"
         BorderBrush="{DynamicResource BorderBrush}">
 
